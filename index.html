@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BNI Leadership Excellence Hub | BNI Miracle</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <style>
+        :root {
+            /* Brand Colors */
+            --bni-red: #CF202E; 
+            --bni-burgundy: #8A151F;
+            --bni-black: #2d2d2d;
+            --bni-gray: #f4f6f8;
+            --bni-gold: #C5A059;
+            --text-main: #333333;
+            --radius: 12px;
+            --shadow: 0 4px 20px rgba(0,0,0,0.06);
+            --anim: 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Segoe UI', system-ui, sans-serif; }
+        
+        body { 
+            background-color: var(--bni-gray); 
+            color: var(--text-main); 
+            padding-bottom: 100px;
+            overflow-x: hidden; 
+        }
+
+        /* --- CLASSIC HEADER --- */
+        .nav-sticky {
+            background: var(--bni-black); position: sticky; top: 0; z-index: 1000;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2); padding: 0.5rem 0;
+        }
+        .global-nav {
+            display: flex; gap: 12px; overflow-x: auto; padding: 5px 15px;
+            max-width: 1200px; margin: 0 auto; -ms-overflow-style: none; scrollbar-width: none;
+        }
+        .global-nav::-webkit-scrollbar { display: none; }
+        .nav-pill {
+            color: white; text-decoration: none; font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
+            padding: 8px 16px; background: rgba(255,255,255,0.15); border-radius: 50px;
+            display: flex; align-items: center; gap: 8px; white-space: nowrap; flex-shrink: 0; transition: var(--anim);
+        }
+        .nav-pill:hover, .nav-pill.active { background: var(--bni-red); transform: translateY(-2px); }
+
+        .hero {
+            background: linear-gradient(135deg, var(--bni-red) 0%, var(--bni-burgundy) 100%);
+            color: white; padding: 3rem 1.5rem 4rem; text-align: center;
+            border-radius: 0 0 30px 30px; margin-bottom: -3rem; box-shadow: var(--shadow);
+        }
+        .hero h1 { font-size: clamp(1.6rem, 4vw, 2.8rem); font-weight: 900; line-height: 1.1; margin-bottom: 5px; text-transform: uppercase; }
+        .hero h2 { font-size: clamp(0.9rem, 2vw, 1.1rem); opacity: 0.9; font-weight: 300; margin-bottom: 20px; letter-spacing: 1px; }
+        
+        .chapter-btn {
+            background: var(--bni-gold); color: #000; padding: 10px 24px; border-radius: 30px;
+            font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2); transition: var(--anim); font-size: 0.9rem;
+        }
+        .chapter-btn:hover { background: white; transform: scale(1.05); }
+
+        .quote-wrapper { margin-top: 25px; height: 40px; display: flex; align-items: center; justify-content: center; }
+        .quote-text {
+            font-style: italic; font-size: 0.9rem; opacity: 0; transition: opacity 0.5s ease;
+            max-width: 600px; border-left: 3px solid var(--bni-gold); padding-left: 10px;
+        }
+        .quote-text.visible { opacity: 1; }
+
+        /* --- WIDGETS --- */
+        .widget-container {
+            max-width: 1200px; margin: 0 auto 30px; padding: 0 1.5rem;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;
+        }
+        .widget { background: white; border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow); border: 1px solid #fff; }
+        .widget-head { font-size: 0.75rem; font-weight: 800; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; border-bottom: 1px solid #f0f0f0; padding-bottom: 10px; }
+
+        /* Org Scroll */
+        .org-track { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 5px; scroll-behavior: smooth; -ms-overflow-style: none; scrollbar-width: none; }
+        .org-track::-webkit-scrollbar { display: none; }
+        .org-card {
+            min-width: 140px; background: #fafafa; border: 1px solid #eee; padding: 15px; border-radius: 12px;
+            border-left: 4px solid #ccc; cursor: pointer; transition: var(--anim); flex-shrink: 0;
+        }
+        .org-card:hover { background: white; border-left-color: var(--bni-red); transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
+        .org-card h4 { font-size: 0.8rem; font-weight: 800; color: var(--text-main); margin-bottom: 2px; }
+        .org-card span { font-size: 0.65rem; color: #777; text-transform: uppercase; }
+
+        /* Timeline Calendar */
+        .timeline { position: relative; padding-left: 10px; }
+        .timeline::before { content: ''; position: absolute; left: 24px; top: 0; bottom: 0; width: 2px; background: #eee; z-index: 0; }
+        .tl-item { display: flex; align-items: flex-start; gap: 15px; margin-bottom: 15px; position: relative; z-index: 1; }
+        .tl-date {
+            background: white; border: 2px solid var(--bni-red); color: var(--bni-red);
+            border-radius: 8px; width: 50px; text-align: center; padding: 5px; font-weight: 800; font-size: 0.8rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); line-height: 1.2;
+        }
+        .tl-date span { display: block; font-size: 0.65rem; font-weight: 600; text-transform: uppercase; color: #333; }
+        .tl-content { background: #f9f9f9; padding: 10px 15px; border-radius: 8px; flex: 1; border: 1px solid #eee; transition: 0.2s; }
+        .tl-content:hover { background: white; border-color: #ddd; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .tl-content h5 { font-size: 0.9rem; font-weight: 700; margin-bottom: 2px; }
+        .tl-content p { font-size: 0.75rem; color: #666; }
+        .tag { font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: 700; text-transform: uppercase; display: inline-block; margin-top: 5px; }
+        .tag.blue { background: #e3f2fd; color: #0d47a1; }
+        .tag.green { background: #e8f5e9; color: #1b5e20; }
+        .tag.gold { background: #fff8e1; color: #856404; }
+
+        /* --- CONTROLS --- */
+        .controls {
+            max-width: 1200px; margin: 0 auto 30px; padding: 0 1.5rem;
+            display: flex; gap: 10px; flex-wrap: wrap;
+        }
+        .search-wrap { flex: 1; min-width: 250px; position: relative; }
+        .search-wrap input {
+            width: 100%; padding: 14px 20px 14px 45px; border: none; border-radius: 10px;
+            box-shadow: var(--shadow); font-size: 0.95rem; transition: var(--anim);
+        }
+        .search-wrap input:focus { outline: 2px solid var(--bni-red); }
+        .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); opacity: 0.5; }
+        .ai-btn {
+            background: var(--bni-black); color: white; border: none; padding: 0 20px; border-radius: 10px;
+            font-weight: 700; cursor: pointer; box-shadow: var(--shadow); display: flex; align-items: center; gap: 8px;
+            transition: var(--anim); flex-grow: 0;
+        }
+        .ai-btn:hover { background: var(--bni-red); }
+
+        /* --- MAIN GRID --- */
+        .grid-layout {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px; max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;
+        }
+
+        .role-card {
+            background: white; border-radius: var(--radius); box-shadow: var(--shadow);
+            overflow: hidden; border-top: 6px solid #ccc; display: flex; flex-direction: column;
+            transition: var(--anim); position: relative;
+        }
+        .role-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0,0,0,0.1); }
+        
+        .border-president { border-image: linear-gradient(to right, #CF202E, #8A151F) 1; border-top-width: 6px; }
+        .border-vp { border-image: linear-gradient(to right, #2d2d2d, #555) 1; border-top-width: 6px; }
+        .border-st { border-image: linear-gradient(to right, #C5A059, #e6c278) 1; border-top-width: 6px; }
+
+        .card-head { padding: 1.5rem; display: flex; justify-content: space-between; align-items: flex-start; }
+        .head-info h3 { font-size: 1.4rem; font-weight: 800; color: var(--bni-black); margin-bottom: 5px; }
+        .role-badge { background: #f0f0f0; padding: 4px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; color: #555; letter-spacing: 0.5px; }
+        .head-icon { font-size: 2.2rem; opacity: 0.8; }
+
+        .tabs { display: flex; background: #fcfcfc; border-bottom: 1px solid #eee; }
+        .tab {
+            flex: 1; padding: 14px 0; border: none; background: none; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+            color: #999; cursor: pointer; border-bottom: 3px solid transparent; transition: 0.2s;
+        }
+        .tab:hover { color: var(--bni-red); background: #f4f4f4; }
+        .tab.active { color: var(--bni-red); border-bottom-color: var(--bni-red); background: white; }
+
+        .panel { display: none; padding: 1.5rem; animation: fadeIn 0.3s; }
+        .panel.active { display: block; }
+
+        /* --- VISUAL ENHANCEMENTS (STATS & LISTS) --- */
+        .resp-list { list-style: none; margin: 15px 0; }
+        .resp-item { padding: 6px 0; display: flex; align-items: flex-start; gap: 8px; font-size: 0.9rem; border-bottom: 1px dashed #eee; }
+        .resp-item:last-child { border-bottom: none; }
+        .resp-icon { color: var(--bni-red); font-weight: bold; }
+
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .stat-box { 
+            background: linear-gradient(145deg, #ffffff, #f5f5f5); border: 1px solid #eee; 
+            padding: 10px; border-radius: 8px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+        .stat-val { display: block; font-weight: 800; color: var(--bni-black); font-size: 1.1rem; }
+        .stat-lbl { font-size: 0.65rem; text-transform: uppercase; font-weight: 700; color: #888; letter-spacing: 0.5px; }
+        .stat-box.time { border-color: #ffe0b2; background: #fff8e1; }
+        .stat-box.time .stat-val { color: #f57f17; }
+
+        /* Checklist Styling */
+        .checklist-group { margin-bottom: 15px; }
+        .checklist-group h5 { 
+            font-size: 0.7rem; text-transform: uppercase; color: #aaa; margin: 10px 0 5px; 
+            font-weight: 800; letter-spacing: 0.5px; display: flex; align-items: center; gap: 5px; 
+        }
+        .cl-item { 
+            display: flex; align-items: center; gap: 10px; font-size: 0.85rem; padding: 8px 10px; 
+            background: #fff; border: 1px solid #eee; border-radius: 6px; margin-bottom: 5px; cursor: pointer; transition: 0.2s;
+        }
+        .cl-item:hover { background: #fafafa; border-color: #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .cl-item.done { text-decoration: line-through; opacity: 0.6; background: #f4f4f4; }
+        .cl-check { width: 14px; height: 14px; border: 2px solid var(--bni-gold); border-radius: 3px; flex-shrink: 0; }
+        .cl-item.done .cl-check { background: var(--bni-gold); }
+
+        /* Accordion */
+        .acc-item { border: 1px solid #eee; border-radius: 8px; margin-bottom: 10px; overflow: hidden; background: #fff; }
+        .acc-head { padding: 12px 15px; background: #fff; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: 700; font-size: 0.85rem; color: #333; border-bottom: 1px solid transparent; }
+        .acc-head:hover { background: #fff5f5; color: var(--bni-red); }
+        .acc-body { display: none; padding: 15px; background: #fcfcfc; border-top: 1px solid #eee; font-size: 0.85rem; color: #555; }
+        .acc-body.open { display: block; }
+
+        .learn-btn {
+            display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%;
+            background: #e6f4ea; color: #1e7e34; padding: 10px; border-radius: 6px;
+            font-size: 0.8rem; font-weight: 700; border: 1px solid #c3e6cb;
+            text-decoration: none; transition: 0.2s; margin-top: 10px;
+        }
+        .learn-btn:hover { background: #d1e7dd; border-color: #1e7e34; }
+
+        /* Modal */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 20px; }
+        .modal-content { background: white; width: 100%; max-width: 450px; border-radius: 20px; padding: 25px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); text-align: center; position: relative; }
+        .modal-close { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; color: #999; }
+        .modal-content input { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; font-size: 1rem; margin-bottom: 15px; text-align: center; }
+
+        footer { text-align: center; padding: 30px; color: #888; border-top: 1px solid #ddd; margin-top: 40px; background: white; font-size: 0.8rem; }
+        
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+<div class="nav-sticky">
+    <nav class="global-nav">
+        <a href="https://bni-bangalore.in/" target="_blank" class="nav-pill">🇮🇳 BNI Bangalore</a>
+        <a href="https://www.bniconnectglobal.com/" target="_blank" class="nav-pill">🔗 Connect</a>
+        <a href="https://www.schoox.com/login.php" target="_blank" class="nav-pill">🎓 B.Builder</a>
+        <a href="https://www.bnipodcast.com/" target="_blank" class="nav-pill">🎙️ Podcast</a>
+        <a href="https://bni.com/events" target="_blank" class="nav-pill active">🌍 Global</a>
+    </nav>
+</div>
+
+<header class="hero">
+    <h1>BNI Leadership Excellence Hub</h1>
+    <h2>Interactive Organizational Command Center</h2>
+    
+    <a href="https://bni-bangalore.in/en-IN/chapterdetail?chapterId=TDQwn4Iw00%2BQ8deYpVUhgA%3D%3D&name=BNI%20Miracle" target="_blank" class="chapter-btn">
+        🌟 BNI Miracle Chapter
+    </a>
+
+    <div class="quote-wrapper">
+        <div class="quote-text visible" id="quoteTarget">"Givers Gain® is not just a motto, it is a way of life." — Dr. Ivan Misner</div>
+    </div>
+</header>
+
+<div class="widget-container">
+    <div class="widget">
+        <div class="widget-head">Org Structure (Tap to Navigate)</div>
+        <div class="org-track">
+            <div class="org-card" style="border-left-color: var(--bni-red)" onclick="scrollToCard('president')"><h4>PRESIDENT</h4><span>Strategy</span></div>
+            <div class="org-card" style="border-left-color: var(--bni-black)" onclick="scrollToCard('vp')"><h4>VICE PRES</h4><span>Success</span></div>
+            <div class="org-card" style="border-left-color: var(--bni-gold)" onclick="scrollToCard('st')"><h4>SEC/TREAS</h4><span>Operations</span></div>
+            <div class="org-card" onclick="scrollToCard('vp', 1)"><h4>Success Comm</h4><span>Team VP</span></div>
+            <div class="org-card" onclick="scrollToCard('president', 1)"><h4>Growth Team</h4><span>Team Pres</span></div>
+        </div>
+    </div>
+    <div class="widget">
+        <div class="widget-head">Upcoming Schedule <span style="color:var(--bni-red)">Live</span></div>
+        <div class="timeline" id="calendarList">
+            </div>
+    </div>
+</div>
+
+<div class="controls">
+    <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Search roles, tasks, or metrics..." onkeyup="filterGrid()">
+    </div>
+    <button class="ai-btn" onclick="openModal()">🤖 Matcher</button>
+</div>
+
+<main class="grid-layout" id="mainGrid"></main>
+
+<footer>
+    <p><strong>BNI Miracle</strong> | Platinum Excellence Standards</p>
+    <p>© 2026 BNI Global. Designed for Leadership Success.</p>
+</footer>
+
+<div class="modal-overlay" id="aiModal" onclick="closeModal(event)">
+    <div class="modal-content">
+        <div class="modal-close" onclick="closeModal({target:{id:'aiModal'}})">×</div>
+        <h3 style="color:var(--bni-red)">🤖 Role Matcher</h3>
+        <p style="color:#666; margin-bottom:15px">Try: "Social", "Money", "Rules", "Teaching"</p>
+        <input type="text" id="aiInput" placeholder="Skill or interest..." onkeyup="runAI()">
+        <div id="aiOutput"></div>
+    </div>
+</div>
+
+<script>
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR5TU1qmAYJtODRDEnC6Xuv7zcIWsQspuz99hEKMfywqoDeu0GL-aFZEiov8CtpF1hKW1X-3Oi6LTre/pub?gid=100496383&single=true&output=csv';
+
+    // *** 1. RICH DATASET (Hardcoded Backup) ***
+    // This ensures 100% functionality and perfect formatting instantly.
+    const RICH_DATA = [
+        // VP TEAM
+        { 
+            Group:'VP', RoleTitle:'Community Builder', Description:'Fosters chapter culture and bonding.', Time:'2h/wk',
+            Roles: ['Organize social events/coffee connects.', 'Celebrate member birthdays/milestones.', 'Welcome new members into the culture.', 'Check in on sick/absent members.', 'Promote "Givers Gain" stories.'],
+            Checklist: { pre:['Plan upcoming social topic'], dur:['Share culture moment'], post:['Post photos to group'] },
+            KPIs: [{l:'Morale',v:'High'}, {l:'Events',v:'1/Mo'}],
+            Link: 'https://bni.com', LearnName: 'Culture Builder'
+        },
+        { 
+            Group:'VP', RoleTitle:'Retention Specialist', Description:'Focuses on member renewals (90 days out).', Time:'2h/wk',
+            Roles: ['Monitor Membership Dues Report.', 'Contact members 90 days before expiry.', 'Conduct happiness/exit interviews.', 'Identify "at-risk" members early.', 'Report retention stats to VP.'],
+            Checklist: { pre:['Pull Expiry Report'], dur:['Report renewals due'], post:['Call 2 expiring members'] },
+            KPIs: [{l:'Retention',v:'85%+'}, {l:'Late',v:'0'}],
+            Link: 'https://bniconnectglobal.com', LearnName: 'Retention Strat'
+        },
+        { 
+            Group:'VP', RoleTitle:'Quality Assurance', Description:'Vets applications & references.', Time:'2h/wk',
+            Roles: ['Review new member applications.', 'Conduct reference checks (calls).', 'Interview applicants (classification).', 'Ensure no classification conflicts.', 'Report findings to MC.'],
+            Checklist: { pre:['Review pending apps'], dur:['Report clear/conflict'], post:['Call 3 references'] },
+            KPIs: [{l:'Refs Chk',v:'100%'}, {l:'Speed',v:'<48hrs'}],
+            Link: 'https://schoox.com', LearnName: 'QC Standards'
+        },
+        { 
+            Group:'VP', RoleTitle:'Member Engagement', Description:'Tracks participation (121s, CEUs).', Time:'1h/wk',
+            Roles: ['Monitor PALMS for low activity.', 'Encourage 121s and CEUs.', 'Recognize top performers.', 'Coach members in the "Grey/Red".', 'Promote regional training.'],
+            Checklist: { pre:['Check PALMS report'], dur:['Recognize Top CEU'], post:['Call 1 low-activity member'] },
+            KPIs: [{l:'Traffic',v:'Green'}, {l:'121s',v:'High'}],
+            Link: 'https://bniconnectglobal.com', LearnName: 'Engage Tech'
+        },
+        { 
+            Group:'VP', RoleTitle:'Attendance Specialist', Description:'Tracks absences and lates.', Time:'1h/wk',
+            Roles: ['Mark attendance in PALMS weekly.', 'Monitor 3-absence rule.', 'Send attendance warning letters.', 'Call absent members to check-in.', 'Report chronic lateness to VP.'],
+            Checklist: { pre:['Print sign-in sheet'], dur:['Monitor late arrivals'], post:['Enter PALMS data'] },
+            KPIs: [{l:'Absences',v:'<5%'}, {l:'Lates',v:'0'}],
+            Link: 'https://bniconnectglobal.com', LearnName: 'Attendance Pol'
+        },
+        { 
+            Group:'VP', RoleTitle:'Member Relations', Description:'Handles disputes and conflict.', Time:'As Needed',
+            Roles: ['Act as the "Conflict Manager".', 'Listen to member complaints neutrally.', 'Consult with VP/Director on policy.', 'Facilitate mediation between members.', 'Ensure Code of Ethics is followed.'],
+            Checklist: { pre:['Check complaint inbox'], dur:['Observe member interactions'], post:['Follow up on open cases'] },
+            KPIs: [{l:'Resolution',v:'100%'}, {l:'Time',v:'<1 Wk'}],
+            Link: 'https://schoox.com', LearnName: 'Conflict Mastery'
+        },
+        { 
+            Group:'VP', RoleTitle:'Referral Quality', Description:'Audits referral legitimacy.', Time:'1h/wk',
+            Roles: ['Randomly audit passed referrals.', 'Call referral receivers for feedback.', 'Verify "Closed Business" amounts.', 'Educate on Lead vs. Referral.', 'Track internal vs. external refs.'],
+            Checklist: { pre:['Select 3 refs to audit'], dur:['Give quality tip'], post:['Call receivers'] },
+            KPIs: [{l:'Conversion',v:'High'}, {l:'Fake',v:'0'}],
+            Link: 'https://schoox.com', LearnName: 'Ref Reality'
+        },
+        { 
+            Group:'VP', RoleTitle:'Mentor Specialist', Description:'Manages Passport program.', Time:'3h/wk',
+            Roles: ['Assign mentors to new members.', 'Track Passport to Success progress.', 'Schedule induction for graduates.', 'Train mentors on their role.', 'Ensure new members feel supported.'],
+            Checklist: { pre:['Check Passport status'], dur:['Meet new members'], post:['Assign mentor pairings'] },
+            KPIs: [{l:'Passport',v:'100%'}, {l:'Grads',v:'All'}],
+            Link: 'https://schoox.com', LearnName: 'Mentor Kit'
+        },
+
+        // PRESIDENT TEAM
+        { 
+            Group:'President', RoleTitle:'Education Coordinator', Description:'Delivers weekly networking moments.', Time:'2h/wk',
+            Roles: ['Select weekly networking topic.', 'Prepare 3-5 min presentation.', 'Coordinate with S/T for slides.', 'Engage members with questions.', 'Promote BNI Podcast episodes.'],
+            Checklist: { pre:['Prepare slides/script'], dur:['Deliver 3m slot'], post:['Share link to content'] },
+            KPIs: [{l:'Slot',v:'Weekly'}, {l:'Value',v:'High'}],
+            Link: 'https://schoox.com', LearnName: 'Edu Toolkit'
+        },
+        { 
+            Group:'President', RoleTitle:'BNI Connect Coord', Description:'Updates roster online.', Time:'1h/wk',
+            Roles: ['Ensure all profiles have photos.', 'Update leadership team titles.', 'Remove dropped members promptly.', 'Help members fix profile keywords.', 'Teach members Connect basics.'],
+            Checklist: { pre:['Check roster accuracy'], dur:['Tech tip of week'], post:['Update changes'] },
+            KPIs: [{l:'Accuracy',v:'100%'}, {l:'Photos',v:'100%'}],
+            Link: 'https://bniconnectglobal.com', LearnName: 'Connect Basics'
+        },
+        { 
+            Group:'President', RoleTitle:'Power Team Coord', Description:'Organizes Contact Spheres.', Time:'2h/wk',
+            Roles: ['Identify Power Team groups.', 'Schedule monthly PT meetings.', 'Identify missing professions.', 'Review referral flow within PTs.', 'Report PT success to President.'],
+            Checklist: { pre:['Review PT stats'], dur:['Announce PT meeting'], post:['Schedule next one'] },
+            KPIs: [{l:'PT Mtg',v:'1/Mo'}, {l:'Refs',v:'High'}],
+            Link: 'https://schoox.com', LearnName: 'PT Guide'
+        },
+        { 
+            Group:'President', RoleTitle:'Joint Call Coord', Description:'Arranges sales calls.', Time:'1h/wk',
+            Roles: ['Identify synergistic pairs.', 'Schedule joint sales calls.', 'Coach on "Edifying" partners.', 'Track revenue from joint calls.', 'Share success stories.'],
+            Checklist: { pre:['Identify pair'], dur:['Share success story'], post:['Follow up on call'] },
+            KPIs: [{l:'Calls',v:'4/Mo'}, {l:'$$$',v:'High'}],
+            Link: 'https://schoox.com', LearnName: 'Sales Synergy'
+        },
+        { 
+            Group:'President', RoleTitle:'121 Coordinator', Description:'Encourages face-to-face meetings.', Time:'1h/wk',
+            Roles: ['Run 121 report from PALMS.', 'Identify members with 0 121s.', 'Match members for 121s.', 'Promote the GAINS sheet.', 'Organize "Stack Days".'],
+            Checklist: { pre:['Run 121 report'], dur:['Assign random 121s'], post:['Check completion'] },
+            KPIs: [{l:'Partic.',v:'100%'}, {l:'Avg',v:'1/Wk'}],
+            Link: 'https://schoox.com', LearnName: 'Givers Gain'
+        },
+        { 
+            Group:'President', RoleTitle:'TYFCB Coordinator', Description:'Tracks revenue.', Time:'1h/wk',
+            Roles: ['Ensure slips are entered online.', 'Audit large slips (>1Lakh).', 'Announce "Notable Networkers".', 'Track Seat Value.', 'Motivate members to thank others.'],
+            Checklist: { pre:['Audit online slips'], dur:['Announce totals'], post:['Verify large slips'] },
+            KPIs: [{l:'Entered',v:'100%'}, {l:'Verify',v:'100%'}],
+            Link: 'https://bniconnectglobal.com', LearnName: 'Rev Tracking'
+        },
+        { 
+            Group:'President', RoleTitle:'Weekly Pres Coord', Description:'Trains on 30-sec pitch.', Time:'1h/wk',
+            Roles: ['Manage weekly speaker order.', 'Check timing device/bell.', 'Remind members of the theme.', 'Ensure "Specific Asks".', 'Stop members who go over time.'],
+            Checklist: { pre:['Set roster order'], dur:['Time speeches'], post:['Review feedback'] },
+            KPIs: [{l:'Quality',v:'High'}, {l:'Time',v:'Perfect'}],
+            Link: 'https://schoox.com', LearnName: 'Pres Skills'
+        },
+        { 
+            Group:'President', RoleTitle:'Pre-induction Coord', Description:'Orientates inductees.', Time:'As Needed',
+            Roles: ['Meet with approved applicant.', 'Review expectations/costs.', 'Collect bio/photo.', 'Prepare New Member Kit.', 'Schedule induction date.'],
+            Checklist: { pre:['Prep Member Kit'], dur:['Conduct orientation'], post:['Confirm induction'] },
+            KPIs: [{l:'Ready',v:'100%'}, {l:'Info',v:'Clear'}],
+            Link: 'https://schoox.com', LearnName: 'Onboarding'
+        },
+
+        // ST TEAM
+        { 
+            Group:'ST', RoleTitle:'Feature Pres Spec', Description:'Schedules 10m speakers.', Time:'1h/wk',
+            Roles: ['Maintain 8-week schedule.', 'Collect bio sheet 1 week prior.', 'Ensure door prize is ready.', 'Coach speaker on topic.', 'Fill gaps in schedule.'],
+            Checklist: { pre:['Confirm next week'], dur:['Intro speaker'], post:['Update schedule'] },
+            KPIs: [{l:'Gaps',v:'0'}, {l:'Bio',v:'100%'}],
+            Link: 'https://bniconnectglobal.com', LearnName: 'Pres Mgmt'
+        },
+        { 
+            Group:'ST', RoleTitle:'Go Green Spec', Description:'Helps members reach Green.', Time:'1h/wk',
+            Roles: ['Analyze Traffic Light report.', 'Identify "easy wins" for Amber members.', 'Explain the Power of One.', 'Celebrate Green members.', 'Coach Red/Grey members.'],
+            Checklist: { pre:['Analyze Report'], dur:['Tip of week'], post:['Call 1 Amber member'] },
+            KPIs: [{l:'Green',v:'70%+'}, {l:'Red',v:'0'}],
+            Link: 'https://bnipowerofone.com', LearnName: 'Power of One'
+        },
+        { 
+            Group:'ST', RoleTitle:'Lead Visitor Host', Description:'Manages greeting team.', Time:'4h/wk',
+            Roles: ['Arrive 30 mins early.', 'Set up visitor table/badges.', 'Assign host roles (Greeter, etc).', 'Collect visitor sheets.', 'Conduct visitor orientation.'],
+            Checklist: { pre:['Arrive early'], dur:['Greet everyone'], post:['Enter visitor data'] },
+            KPIs: [{l:'Exp',v:'High'}, {l:'Conv',v:'20%'}],
+            Link: 'https://schoox.com', LearnName: 'Host Cert'
+        },
+        { 
+            Group:'ST', RoleTitle:'Training Coord', Description:'Promotes MSP/Advanced.', Time:'1h/wk',
+            Roles: ['Review regional training calendar.', 'Announce upcoming workshops.', 'Track member CEUs.', 'Organize group training trips.', 'Ensure new members do MSP.'],
+            Checklist: { pre:['Check calendar'], dur:['Promote event'], post:['Track attendees'] },
+            KPIs: [{l:'CEUs',v:'High'}, {l:'MSP',v:'100%'}],
+            Link: 'https://bni-bangalore.in', LearnName: 'Training Lead'
+        },
+        { 
+            Group:'ST', RoleTitle:'Socials Coord', Description:'Plans quarterly parties.', Time:'Var',
+            Roles: ['Poll members for dates.', 'Scout and book venues.', 'Collect payments.', 'Plan games/activities.', 'Ensure maximum attendance.'],
+            Checklist: { pre:['Book venue'], dur:['Host event'], post:['Share photos'] },
+            KPIs: [{l:'Attd',v:'75%'}, {l:'Fun',v:'Max'}],
+            Link: 'https://bni.com', LearnName: 'Event Plan'
+        },
+        { 
+            Group:'ST', RoleTitle:'Communications Spec', Description:'Branding & Social Media.', Time:'2h/wk',
+            Roles: ['Take photos during meeting.', 'Post to FB/LinkedIn/Insta.', 'Create recognition flyers.', 'Ensure logo usage compliance.', 'Promote member businesses.'],
+            Checklist: { pre:['Charge camera'], dur:['Take photos'], post:['Post updates'] },
+            KPIs: [{l:'Posts',v:'3/Wk'}, {l:'Brand',v:'100%'}],
+            Link: 'https://bni.com', LearnName: 'Brand Std'
+        },
+        { 
+            Group:'ST', RoleTitle:'BBB Coordinator', Description:'Cross-chapter networking.', Time:'1h/wk',
+            Roles: ['Find international chapters.', 'Arrange joint online meetings.', 'Share global success stories.', 'Help members find global refs.', 'Promote BNI Global events.'],
+            Checklist: { pre:['Find partner'], dur:['Host joint call'], post:['Share contacts'] },
+            KPIs: [{l:'Global',v:'High'}, {l:'Refs',v:'Active'}],
+            Link: 'https://bniconnectglobal.com', LearnName: 'Networking'
+        },
+        { 
+            Group:'ST', RoleTitle:'Online Host', Description:'Manages Zoom/Hybrid tech.', Time:'Mtg',
+            Roles: ['Start meeting 15 mins early.', 'Manage breakout rooms.', 'Spotlight speakers.', 'Mute distractions.', 'Play music during breaks.'],
+            Checklist: { pre:['Test Audio/Video'], dur:['Manage Mutes'], post:['Save Chat'] },
+            KPIs: [{l:'Tech',v:'Smooth'}, {l:'Issues',v:'0'}],
+            Link: 'https://zoom.us', LearnName: 'Zoom Master'
+        }
+    ];
+
+    // Calendar Data
+    const events = [
+        { d: '12', m: 'FEB', t: 'Chapter Meeting', s: '7:30 AM | Miracle Venue', tag: 'Meeting', c: 'green' },
+        { d: '18', m: 'FEB', t: 'LT Roundtable', s: 'Regional Training', tag: 'Training', c: 'blue' },
+        { d: '25', m: 'FEB', t: 'Global Convention', s: 'International Online', tag: 'Global', c: 'gold' }
+    ];
+
+    // Main 3 Leaders Data
+    let masterData = [
+        { 
+            id: 'president', title: 'President', tag: 'Executive', icon: '👔', border: 'border-president',
+            desc: 'The CEO of the chapter. Leads the meeting, sets the culture, and liaises with the Director.',
+            roles: ['Lead Weekly Meeting (90m).', 'Run Monthly LT Meeting.', 'Liaise with Director.', 'Select Leadership Team.', 'Enforce Policies.'],
+            checklist: { pre: ['Review Agenda', 'Welcome Visitors'], dur: ['Run Script', 'Keep Time', 'High Energy'], post: ['Update PALMS', 'Call Absents', 'Weekly Email'] },
+            kpis: [{l:'Retention',v:'85%+'}, {l:'Size',v:'50+'}, {l:'Start',v:'100%'}],
+            time: '8-10 Hours/Wk', learning: { g: 'Leadership Mastery', r: 'President Module' }, subs: [] 
+        },
+        { 
+            id: 'vp', title: 'Vice President', tag: 'Chapter Success', icon: '📊', border: 'border-vp',
+            desc: 'Chairs the Membership Committee. Ensures Growth, Quality, and Engagement.',
+            roles: ['Chair Membership Committee.', 'Track PALMS Report.', 'Manage Attendance.', 'Oversee Applications.', 'Drive Growth.'],
+            checklist: { pre: ['Audit PALMS', 'Run MC Mtg'], dur: ['Report Traffic Lights', 'Open Categories'], post: ['Process Apps', 'Send Letters', 'Update Stats'] },
+            kpis: [{l:'Traffic',v:'Green'}, {l:'PALMS',v:'100%'}, {l:'Growth',v:'+20%'}],
+            time: '6-8 Hours/Wk', learning: { g: 'Conflict Resolution', r: 'VP Training + MC' }, subs: []
+        },
+        { 
+            id: 'st', title: 'Sec / Treas', tag: 'Coordinators', icon: '💼', border: 'border-st',
+            desc: 'Manages Role Coordinators, finances, and speaker rotation schedule.',
+            roles: ['Manage Finances.', 'Speaker Schedule.', 'Oversee Coordinators.', 'Manage Connect Data.', 'Renewals Logistics.'],
+            checklist: { pre: ['Print Rosters', 'Fee Setup'], dur: ['Announce Speakers', 'Door Prize'], post: ['Enter RAP', 'Deposit Bank', 'Update Speaker'] },
+            kpis: [{l:'Fees',v:'100%'}, {l:'Speakers',v:'8 Wks'}, {l:'Renewals',v:'On-Time'}],
+            time: '4-6 Hours/Wk', learning: { g: 'Financial Accuracy', r: 'S/T Training' }, subs: []
+        }
+    ];
+
+    // --- 2. ENGINE ---
+    function init() {
+        renderCalendar();
+        
+        // A. INSTANT LOAD (Priority: Rich Data)
+        processData(RICH_DATA);
+
+        // B. CSV FETCH (Optional Overrides)
+        // Note: The processData function will now parse pipe-separated values from the sheet 
+        // to maintain the rich format if you decide to update via sheet later.
+        Papa.parse(SHEET_URL, {
+            download: true, header: true,
+            complete: (results) => { 
+                if(results.data.length > 0) processData(results.data); 
+            },
+            error: () => console.log("Using built-in data")
+        });
+    }
+
+    function processData(csvRows) {
+        masterData.forEach(p => p.subs = []); // Clear existing subs to prevent duplicates
+
+        csvRows.forEach(row => {
+            if(!row.RoleTitle) return;
+
+            // 1. Identify Team
+            let idx = 0;
+            const g = (row.Group || '').toLowerCase();
+            if(g.includes('vp')) idx = 1;
+            if(g.includes('st') || g.includes('sec')) idx = 2;
+
+            // 2. Parse Lists (Handles both Array from RICH_DATA and String from CSV)
+            // If it comes from Sheet, split by '|'. If from RICH_DATA, use as is.
+            const responsibilities = Array.isArray(row.Roles) ? row.Roles : (row.Responsibilities ? row.Responsibilities.split('|') : (row.Roles || ['Defined by Leadership Team']));
+            
+            // Checklists
+            let preList = [], durList = [], postList = [];
+            
+            if(row.Checklist) { // From RICH_DATA
+                preList = row.Checklist.pre;
+                durList = row.Checklist.dur;
+                postList = row.Checklist.post;
+            } else { // From CSV
+                preList = row.Checklist_Pre ? row.Checklist_Pre.split('|') : [];
+                durList = row.Checklist_Dur ? row.Checklist_Dur.split('|') : (row.Tasks ? row.Tasks.split('|') : ['Standard Participation']);
+                postList = row.Checklist_Post ? row.Checklist_Post.split('|') : [];
+            }
+
+            // KPIs
+            let kpiList = [];
+            if(Array.isArray(row.KPIs)) { // From RICH_DATA
+                kpiList = row.KPIs;
+            } else if (row.KPI_Stats) { // From CSV (Format: Label:Value|Label:Value)
+                kpiList = row.KPI_Stats.split('|').map(k => {
+                    const p = k.split(':');
+                    return { l: p[0], v: p[1] };
+                });
+            } else { // Fallback
+                kpiList = [{ l: row.KPI_L1 || 'KPI', v: row.KPI_V1 || 'N/A' }];
+            }
+
+            // 3. Push to Master Data
+            masterData[idx].subs.push({
+                t: row.RoleTitle,
+                d: row.Description,
+                time: row.Time || 'Var',
+                roles: responsibilities,
+                checklist: { pre: preList, dur: durList, post: postList },
+                kpis: kpiList,
+                l: row.LearnName || (row.LearningName || 'Module'),
+                link: row.Link || (row.LearnLink || 'https://www.schoox.com/login.php')
+            });
+        });
+
+        renderGrid(masterData);
+    }
+
+    function renderCalendar() {
+        document.getElementById('calendarList').innerHTML = events.map(e => `
+            <div class="tl-item">
+                <div class="tl-date">${e.d}<span>${e.m}</span></div>
+                <div class="tl-content">
+                    <span class="tag ${e.c}">${e.tag}</span>
+                    <h5>${e.t}</h5>
+                    <p>${e.s}</p>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function renderGrid(data) {
+        document.getElementById('mainGrid').innerHTML = data.map(cat => `
+            <div class="role-card ${cat.border}" id="card-${cat.id}">
+                <div class="card-head">
+                    <div class="head-info"><span class="role-badge">${cat.tag}</span><h3>${cat.title}</h3></div>
+                    <div class="head-icon">${cat.icon}</div>
+                </div>
+                
+                <div class="tabs">
+                    <button class="tab active" onclick="tab(this, 'dash-${cat.id}')">Dashboard</button>
+                    <button class="tab" onclick="tab(this, 'team-${cat.id}')">Team (${cat.subs.length})</button>
+                    <button class="tab" onclick="tab(this, 'learn-${cat.id}')">Learning</button>
+                </div>
+
+                <div id="dash-${cat.id}" class="panel active">
+                    <p style="color:#666; margin-bottom:15px; font-style:italic;">${cat.desc}</p>
+                    
+                    <h5 style="font-size:0.7rem; color:#999; text-transform:uppercase; margin-bottom:5px;">Responsibilities:</h5>
+                    <ul class="resp-list">
+                        ${cat.roles.map(r => `<li class="resp-item"><span class="resp-icon">➤</span> ${r}</li>`).join('')}
+                    </ul>
+
+                    <div class="checklist-group">
+                        <h5>⏮️ Pre-Meeting</h5>
+                        ${cat.checklist.pre.map(i => `<div class="cl-item" onclick="check(this)"><div class="cl-check"></div>${i}</div>`).join('')}
+                    </div>
+                    <div class="checklist-group">
+                        <h5>▶️ During Meeting</h5>
+                        ${cat.checklist.dur.map(i => `<div class="cl-item" onclick="check(this)"><div class="cl-check"></div>${i}</div>`).join('')}
+                    </div>
+                    <div class="checklist-group">
+                        <h5>⏭️ Post-Meeting</h5>
+                        ${cat.checklist.post.map(i => `<div class="cl-item" onclick="check(this)"><div class="cl-check"></div>${i}</div>`).join('')}
+                    </div>
+
+                    <div class="stat-grid">
+                        <div class="stat-box time">
+                            <span class="stat-val">${cat.time}</span>
+                            <span class="stat-lbl">Time</span>
+                        </div>
+                        ${cat.kpis.map(k => `
+                            <div class="stat-box">
+                                <span class="stat-val">${k.v}</span>
+                                <span class="stat-lbl">${k.l}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div id="team-${cat.id}" class="panel">
+                    ${cat.subs.map(s => `
+                        <div class="acc-item">
+                            <div class="acc-head" onclick="accordion(this)">${s.t} <span>▼</span></div>
+                            <div class="acc-body">
+                                <p style="margin-bottom:15px; font-style:italic; border-bottom:1px solid #eee; padding-bottom:10px;">${s.d}</p>
+                                
+                                <h6 style="text-transform:uppercase; color:#999; font-size:0.65rem; margin-bottom:5px;">Responsibilities:</h6>
+                                <ul class="resp-list" style="margin-bottom:15px;">
+                                    ${s.roles.map(r => `<li class="resp-item" style="font-size:0.8rem;">• ${r}</li>`).join('')}
+                                </ul>
+
+                                <div class="checklist-group">
+                                    <h5>⏮️ Pre</h5>
+                                    ${s.checklist.pre.length ? s.checklist.pre.map(i => `<div class="cl-item" onclick="check(this)"><div class="cl-check"></div>${i}</div>`).join('') : '<span style="font-size:0.8rem; color:#aaa;">None</span>'}
+                                </div>
+                                <div class="checklist-group">
+                                    <h5>▶️ During</h5>
+                                    ${s.checklist.dur.map(i => `<div class="cl-item" onclick="check(this)"><div class="cl-check"></div>${i}</div>`).join('')}
+                                </div>
+                                <div class="checklist-group">
+                                    <h5>⏭️ Post</h5>
+                                    ${s.checklist.post.length ? s.checklist.post.map(i => `<div class="cl-item" onclick="check(this)"><div class="cl-check"></div>${i}</div>`).join('') : '<span style="font-size:0.8rem; color:#aaa;">None</span>'}
+                                </div>
+
+                                <div class="stat-grid">
+                                    <div class="stat-box time">
+                                        <span class="stat-val" style="font-size:0.9rem;">${s.time}</span>
+                                        <span class="stat-lbl">Time</span>
+                                    </div>
+                                    ${s.kpis.map(k => `
+                                        <div class="stat-box">
+                                            <span class="stat-val" style="font-size:0.9rem;">${k.v}</span>
+                                            <span class="stat-lbl">${k.l}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                
+                                <a href="${s.link}" target="_blank" class="learn-btn">🎓 Training: ${s.l}</a>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div id="learn-${cat.id}" class="panel">
+                    <h4 style="margin-bottom:10px; color:#333">Goal: ${cat.learning.g}</h4>
+                    <div style="background:#fff3cd; color:#856404; padding:15px; border-radius:8px; font-size:0.9rem; border:1px solid #ffeeba;">
+                        ⚠️ <strong>Required:</strong> ${cat.learning.r}
+                    </div>
+                    <a href="https://www.schoox.com/login.php" target="_blank" class="learn-btn">Go to Business Builder &rarr;</a>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // --- 3. UTILS & AI ---
+    function tab(btn, id) {
+        const card = btn.closest('.role-card');
+        card.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+        card.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        card.querySelector(`#${id}`).classList.add('active');
+    }
+    function accordion(h) {
+        const b = h.nextElementSibling;
+        b.classList.toggle('open');
+        h.querySelector('span').innerText = b.classList.contains('open') ? '▲' : '▼';
+    }
+    function check(i) { i.classList.toggle('done'); }
+    function scrollToCard(id, tabIdx) {
+        const el = document.getElementById(`card-${id}`);
+        if(el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            if(tabIdx === 1) el.querySelectorAll('.tab')[1].click();
+        }
+    }
+    function filterGrid() {
+        const term = document.getElementById('searchInput').value.toLowerCase();
+        let filtered = JSON.parse(JSON.stringify(masterData));
+        filtered.forEach(cat => {
+            cat.subs = cat.subs.filter(s => s.t.toLowerCase().includes(term));
+        });
+        renderGrid(filtered);
+    }
+    
+    // AI Matcher Logic
+    const aiKeys = { 'social': 'vp', 'party': 'st', 'money': 'st', 'rules': 'vp', 'teach': 'president', 'host': 'st', 'tech': 'st' };
+    function openModal() { document.getElementById('aiModal').style.display = 'flex'; document.getElementById('aiInput').focus(); }
+    function closeModal(e) { if(e.target.id === 'aiModal' || e.target.classList.contains('modal-close')) document.getElementById('aiModal').style.display = 'none'; }
+    function runAI() {
+        const txt = document.getElementById('aiInput').value.toLowerCase();
+        const res = document.getElementById('aiOutput');
+        let m = null;
+        for(const [k,v] of Object.entries(aiKeys)) if(txt.includes(k)) m = v;
+        if(m) {
+            const r = masterData.find(x => x.id === m);
+            res.innerHTML = `<div style="background:#d4edda; color:#155724; padding:10px; border-radius:8px; margin-top:10px;">🎯 Try <strong>${r.title}</strong> team!</div>`;
+        } else res.innerHTML = '';
+    }
+
+    // Quote Cycler
+    const quotes = ["Givers Gain®", "Culture eats strategy", "Changing the Way the World Does Business"];
+    let qIdx = 0;
+    setInterval(() => {
+        const el = document.getElementById('quoteTarget');
+        el.style.opacity = 0;
+        setTimeout(() => {
+            qIdx = (qIdx + 1) % quotes.length;
+            el.innerText = `"${quotes[qIdx]}" — Dr. Ivan Misner`;
+            el.style.opacity = 1;
+        }, 500);
+    }, 5000);
+
+    // Start Engine
+    init();
+</script>
+</body>
+</html>
