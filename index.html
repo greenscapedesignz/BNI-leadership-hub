@@ -3,237 +3,412 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BNI Leadership Excellence Hub | BNI Miracle</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <title>BNI Miracle | Leadership Excellence Hub</title>
+    
+    <!-- Security Headers -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://docs.google.com;">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js" integrity="sha512-SGWgwwRA8xZgEoKiex3UubkSkk1qVBQh6Ia8L2/K+BmHBsQMLbhQW3S8JWxr/Rke5K7sL6N9wU+g+Nz2jtLSjw==" crossorigin="anonymous"></script>
+    
     <style>
         :root {
-            /* Brand Colors */
-            --bni-red: #CF202E; 
-            --bni-burgundy: #8A151F;
-            --bni-black: #2d2d2d;
-            --bni-gray: #f4f6f8;
-            --bni-gold: #C5A059;
-            --text-main: #333333;
-            --radius: 12px;
-            --shadow: 0 4px 20px rgba(0,0,0,0.06);
-            --anim: 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+            --bni-red: #CF202E; --bni-burgundy: #8A151F; --bni-black: #2d2d2d;
+            --bni-gray: #f4f6f8; --bni-gold: #C5A059; --text-main: #333333;
+            --radius: 14px; --shadow: 0 10px 30px rgba(0,0,0,0.08);
+            --anim: 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; font-family:'Segoe UI', system-ui, -apple-system, sans-serif; }
+        body { background-color:var(--bni-gray); color:var(--text-main); padding-bottom:100px; overflow-x:hidden; }
+
+        /* NAVIGATION - RESPONSIVE */
+        .nav-sticky { background:var(--bni-black); position:sticky; top:0; z-index:1000; padding:0.6rem 0; box-shadow:0 4px 12px rgba(0,0,0,0.2); }
+        .global-nav { 
+            display:flex; gap:12px; overflow-x:auto; padding:5px 15px; max-width:1200px; margin:0 auto; 
+            scrollbar-width:none; -webkit-overflow-scrolling:touch;
+        }
+        .global-nav::-webkit-scrollbar { display:none; }
+        .nav-pill { 
+            color:white; text-decoration:none; font-size:0.75rem; font-weight:700; text-transform:uppercase; 
+            padding:8px 16px; background:rgba(255,255,255,0.15); border-radius:50px; white-space:nowrap; 
+            transition:0.2s; display:flex; align-items:center; gap:6px; flex-shrink:0;
+        }
+        .nav-pill:hover, .nav-pill.active { background:var(--bni-red); transform:translateY(-2px); }
+
+        /* HERO - RESPONSIVE */
+        .hero { 
+            background:linear-gradient(135deg, var(--bni-red) 0%, var(--bni-burgundy) 100%); 
+            color:white; padding:clamp(2.5rem, 5vw, 4rem) 1.5rem clamp(3rem, 6vw, 5rem); 
+            text-align:center; border-radius:0 0 35px 35px; margin-bottom:-3rem; position:relative; 
+        }
+        .hero h1 { 
+            font-size:clamp(1.5rem, 4vw, 2.8rem); font-weight:900; text-transform:uppercase; 
+            letter-spacing:1px; line-height:1.1; margin-bottom:8px; 
+        }
+        .hero h2 { 
+            opacity:0.9; font-weight:300; font-size:clamp(0.85rem, 2vw, 1.1rem); 
+            margin-bottom:20px; line-height:1.4; 
+        }
+        .chapter-btn { 
+            background:var(--bni-gold); color:#000; padding:clamp(10px, 2vw, 12px) clamp(20px, 4vw, 28px); 
+            border-radius:50px; font-weight:800; text-decoration:none; display:inline-flex; 
+            align-items:center; gap:8px; box-shadow:0 6px 20px rgba(0,0,0,0.2); transition:var(--anim); 
+            font-size:clamp(0.85rem, 2vw, 1rem);
+        }
+        .chapter-btn:hover { background:white; transform:scale(1.05); }
+        .quote-wrapper { 
+            margin-top:25px; min-height:50px; display:flex; align-items:center; 
+            justify-content:center; padding:0 15px; 
+        }
+        .quote-text { 
+            font-style:italic; font-size:clamp(0.85rem, 2vw, 0.95rem); opacity:0; 
+            transition:opacity 0.5s ease; max-width:700px; border-left:3px solid var(--bni-gold); 
+            padding-left:15px; text-align:left; line-height:1.5;
+        }
+        .quote-text.visible { opacity:1; }
+
+        /* WIDGETS - FULLY RESPONSIVE */
+        .widget-container { 
+            max-width:1200px; margin:0 auto 30px; padding:0 1.5rem; 
+            display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap:25px; 
+        }
+        .widget { 
+            background:white; border-radius:var(--radius); padding:1.5rem; 
+            box-shadow:var(--shadow); border:1px solid rgba(255,255,255,0.8); 
+        }
+        .widget-head { 
+            font-size:0.7rem; font-weight:800; color:#aaa; text-transform:uppercase; 
+            letter-spacing:1.5px; margin-bottom:15px; display:flex; justify-content:space-between; 
+            align-items:center; border-bottom:1px solid #f0f0f0; padding-bottom:10px; flex-wrap:wrap; gap:8px;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Segoe UI', system-ui, sans-serif; }
-        
-        body { 
-            background-color: var(--bni-gray); 
-            color: var(--text-main); 
-            padding-bottom: 100px;
-            overflow-x: hidden; 
+        /* ORG TRACK - IMPROVED RESPONSIVENESS */
+        .org-track { 
+            display:flex; gap:12px; overflow-x:auto; padding-bottom:10px; 
+            scroll-behavior:smooth; scrollbar-width:none; -webkit-overflow-scrolling:touch;
+            scroll-snap-type:x proximity;
+        }
+        .org-track::-webkit-scrollbar { display:none; }
+        .org-card { 
+            min-width:clamp(130px, 30vw, 150px); background:#f9f9f9; border:1px solid #eee; 
+            padding:15px; border-radius:12px; border-left:5px solid #ccc; cursor:pointer; 
+            transition:var(--anim); flex-shrink:0; scroll-snap-align:start;
+        }
+        .org-card:hover { 
+            background:white; border-left-color:var(--bni-red); 
+            transform:translateY(-4px); box-shadow:0 8px 20px rgba(0,0,0,0.06); 
+        }
+        .org-card h4 { font-size:clamp(0.75rem, 2vw, 0.85rem); font-weight:800; margin-bottom:3px; }
+        .org-card span { font-size:0.65rem; color:#888; text-transform:uppercase; font-weight:700; }
+
+        /* TIMELINE */
+        .timeline { position:relative; padding-left:10px; }
+        .timeline::before { 
+            content:''; position:absolute; left:24px; top:0; bottom:0; 
+            width:2px; background:#eee; z-index:0; 
+        }
+        .tl-item { 
+            display:flex; align-items:flex-start; gap:15px; margin-bottom:15px; 
+            position:relative; z-index:1; 
+        }
+        .tl-date { 
+            background:white; border:2px solid var(--bni-red); color:var(--bni-red); 
+            border-radius:8px; min-width:50px; width:50px; text-align:center; padding:5px; 
+            font-weight:800; font-size:0.8rem; box-shadow:0 2px 5px rgba(0,0,0,0.05); 
+            line-height:1.2; flex-shrink:0;
+        }
+        .tl-date span { display:block; font-size:0.65rem; font-weight:600; text-transform:uppercase; color:#333; }
+        .tl-content { 
+            background:#f9f9f9; padding:10px 15px; border-radius:8px; flex:1; 
+            border:1px solid #eee; transition:0.2s; 
+        }
+        .tl-content:hover { background:white; border-color:#ddd; box-shadow:0 5px 15px rgba(0,0,0,0.05); }
+        .tl-content h5 { font-size:clamp(0.85rem, 2vw, 0.9rem); font-weight:700; margin-bottom:2px; }
+        .tl-content p { font-size:0.75rem; color:#666; }
+        .tag { 
+            font-size:0.65rem; padding:2px 6px; border-radius:4px; font-weight:700; 
+            text-transform:uppercase; display:inline-block; margin-bottom:5px; 
+        }
+        .tag.blue { background:#e3f2fd; color:#0d47a1; }
+        .tag.green { background:#e8f5e9; color:#1b5e20; }
+        .tag.gold { background:#fff8e1; color:#856404; }
+
+        /* CONTROLS - RESPONSIVE */
+        .controls { 
+            max-width:1200px; margin:0 auto 30px; padding:0 1.5rem; 
+            display:flex; gap:10px; flex-wrap:wrap; 
+        }
+        .search-wrap { flex:1; min-width:min(250px, 100%); position:relative; }
+        .search-wrap input { 
+            width:100%; padding:14px 20px 14px 45px; border:none; border-radius:10px; 
+            box-shadow:var(--shadow); font-size:0.95rem; transition:var(--anim); 
+        }
+        .search-wrap input:focus { outline:2px solid var(--bni-red); }
+        .search-icon { position:absolute; left:15px; top:50%; transform:translateY(-50%); opacity:0.5; }
+        .ai-btn { 
+            background:var(--bni-black); color:white; border:none; 
+            padding:14px 20px; border-radius:10px; font-weight:700; cursor:pointer; 
+            box-shadow:var(--shadow); display:flex; align-items:center; gap:8px; 
+            transition:var(--anim); flex-shrink:0; font-size:0.9rem;
+        }
+        .ai-btn:hover { background:var(--bni-red); transform:translateY(-2px); }
+
+        /* MAIN GRID - RESPONSIVE */
+        .grid-layout { 
+            display:grid; 
+            grid-template-columns:repeat(auto-fit, minmax(min(380px, 100%), 1fr)); 
+            gap:30px; max-width:1300px; margin:0 auto; padding:0 1.5rem; 
+        }
+        .role-card { 
+            background:white; border-radius:var(--radius); box-shadow:var(--shadow); 
+            overflow:hidden; border-top:8px solid #ccc; display:flex; flex-direction:column; 
+            transition:var(--anim); 
+        }
+        .role-card:hover { transform:translateY(-8px); box-shadow:0 20px 40px rgba(0,0,0,0.12); }
+        .border-president { border-top-color:var(--bni-red); }
+        .border-vp { border-top-color:var(--bni-black); }
+        .border-st { border-top-color:var(--bni-gold); }
+
+        .card-head { padding:1.5rem; display:flex; justify-content:space-between; align-items:flex-start; }
+        .head-info h3 { 
+            font-size:clamp(1.2rem, 3vw, 1.4rem); font-weight:800; 
+            color:var(--bni-black); margin-bottom:5px; 
+        }
+        .role-badge { 
+            background:#f0f0f0; padding:4px 8px; border-radius:4px; font-size:0.65rem; 
+            font-weight:700; text-transform:uppercase; color:#555; letter-spacing:0.5px; 
+        }
+        .head-icon { font-size:clamp(1.8rem, 4vw, 2.2rem); opacity:0.8; }
+
+        /* TABS - RESPONSIVE */
+        .tabs { 
+            display:flex; background:#f8f9fa; border-bottom:1px solid #eee; 
+            overflow-x:auto; scrollbar-width:none;
+        }
+        .tabs::-webkit-scrollbar { display:none; }
+        .tab { 
+            flex:1; min-width:max-content; padding:14px 12px; border:none; background:none; 
+            font-size:clamp(0.65rem, 1.5vw, 0.7rem); font-weight:800; text-transform:uppercase; 
+            color:#aaa; cursor:pointer; transition:0.2s; position:relative; white-space:nowrap;
+        }
+        .tab:hover { background:#f4f4f4; color:var(--bni-red); }
+        .tab.active { color:var(--bni-red); background:white; }
+        .tab.active::after { 
+            content:''; position:absolute; bottom:0; left:15%; right:15%; 
+            height:4px; background:var(--bni-red); border-radius:10px 10px 0 0; 
         }
 
-        /* --- CLASSIC HEADER --- */
-        .nav-sticky {
-            background: var(--bni-black); position: sticky; top: 0; z-index: 1000;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2); padding: 0.5rem 0;
-        }
-        .global-nav {
-            display: flex; gap: 12px; overflow-x: auto; padding: 5px 15px;
-            max-width: 1200px; margin: 0 auto; -ms-overflow-style: none; scrollbar-width: none;
-        }
-        .global-nav::-webkit-scrollbar { display: none; }
-        .nav-pill {
-            color: white; text-decoration: none; font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
-            padding: 8px 16px; background: rgba(255,255,255,0.15); border-radius: 50px;
-            display: flex; align-items: center; gap: 8px; white-space: nowrap; flex-shrink: 0; transition: var(--anim);
-        }
-        .nav-pill:hover, .nav-pill.active { background: var(--bni-red); transform: translateY(-2px); }
+        .panel { display:none; padding:clamp(1.2rem, 3vw, 1.8rem); animation:fadeIn 0.4s ease; }
+        .panel.active { display:block; }
 
-        .hero {
-            background: linear-gradient(135deg, var(--bni-red) 0%, var(--bni-burgundy) 100%);
-            color: white; padding: 3rem 1.5rem 4rem; text-align: center;
-            border-radius: 0 0 30px 30px; margin-bottom: -3rem; box-shadow: var(--shadow);
+        /* DC INSIGHT BOX */
+        .dc-insight { 
+            background:linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%); 
+            border-left:5px solid var(--bni-burgundy); padding:20px; border-radius:12px; 
+            margin-bottom:20px; box-shadow:0 4px 15px rgba(207, 32, 46, 0.1);
         }
-        .hero h1 { font-size: clamp(1.6rem, 4vw, 2.8rem); font-weight: 900; line-height: 1.1; margin-bottom: 5px; text-transform: uppercase; }
-        .hero h2 { font-size: clamp(0.9rem, 2vw, 1.1rem); opacity: 0.9; font-weight: 300; margin-bottom: 20px; letter-spacing: 1px; }
-        
-        .chapter-btn {
-            background: var(--bni-gold); color: #000; padding: 10px 24px; border-radius: 30px;
-            font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2); transition: var(--anim); font-size: 0.9rem;
+        .dc-insight h4 { 
+            color:var(--bni-burgundy); font-size:0.8rem; text-transform:uppercase; 
+            letter-spacing:1px; margin-bottom:10px; display:flex; align-items:center; gap:8px;
         }
-        .chapter-btn:hover { background: white; transform: scale(1.05); }
-
-        .quote-wrapper { margin-top: 25px; height: 40px; display: flex; align-items: center; justify-content: center; }
-        .quote-text {
-            font-style: italic; font-size: 0.9rem; opacity: 0; transition: opacity 0.5s ease;
-            max-width: 600px; border-left: 3px solid var(--bni-gold); padding-left: 10px;
-        }
-        .quote-text.visible { opacity: 1; }
-
-        /* --- WIDGETS --- */
-        .widget-container {
-            max-width: 1200px; margin: 0 auto 30px; padding: 0 1.5rem;
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;
-        }
-        .widget { background: white; border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow); border: 1px solid #fff; }
-        .widget-head { font-size: 0.75rem; font-weight: 800; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; border-bottom: 1px solid #f0f0f0; padding-bottom: 10px; }
-
-        /* Org Scroll */
-        .org-track { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 5px; scroll-behavior: smooth; -ms-overflow-style: none; scrollbar-width: none; }
-        .org-track::-webkit-scrollbar { display: none; }
-        .org-card {
-            min-width: 140px; background: #fafafa; border: 1px solid #eee; padding: 15px; border-radius: 12px;
-            border-left: 4px solid #ccc; cursor: pointer; transition: var(--anim); flex-shrink: 0;
-        }
-        .org-card:hover { background: white; border-left-color: var(--bni-red); transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
-        .org-card h4 { font-size: 0.8rem; font-weight: 800; color: var(--text-main); margin-bottom: 2px; }
-        .org-card span { font-size: 0.65rem; color: #777; text-transform: uppercase; }
-
-        /* Timeline Calendar */
-        .timeline { position: relative; padding-left: 10px; }
-        .timeline::before { content: ''; position: absolute; left: 24px; top: 0; bottom: 0; width: 2px; background: #eee; z-index: 0; }
-        .tl-item { display: flex; align-items: flex-start; gap: 15px; margin-bottom: 15px; position: relative; z-index: 1; }
-        .tl-date {
-            background: white; border: 2px solid var(--bni-red); color: var(--bni-red);
-            border-radius: 8px; width: 50px; text-align: center; padding: 5px; font-weight: 800; font-size: 0.8rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05); line-height: 1.2;
-        }
-        .tl-date span { display: block; font-size: 0.65rem; font-weight: 600; text-transform: uppercase; color: #333; }
-        .tl-content { background: #f9f9f9; padding: 10px 15px; border-radius: 8px; flex: 1; border: 1px solid #eee; transition: 0.2s; }
-        .tl-content:hover { background: white; border-color: #ddd; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .tl-content h5 { font-size: 0.9rem; font-weight: 700; margin-bottom: 2px; }
-        .tl-content p { font-size: 0.75rem; color: #666; }
-        .tag { font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: 700; text-transform: uppercase; display: inline-block; margin-top: 5px; }
-        .tag.blue { background: #e3f2fd; color: #0d47a1; }
-        .tag.green { background: #e8f5e9; color: #1b5e20; }
-        .tag.gold { background: #fff8e1; color: #856404; }
-
-        /* --- CONTROLS --- */
-        .controls {
-            max-width: 1200px; margin: 0 auto 30px; padding: 0 1.5rem;
-            display: flex; gap: 10px; flex-wrap: wrap;
-        }
-        .search-wrap { flex: 1; min-width: 250px; position: relative; }
-        .search-wrap input {
-            width: 100%; padding: 14px 20px 14px 45px; border: none; border-radius: 10px;
-            box-shadow: var(--shadow); font-size: 0.95rem; transition: var(--anim);
-        }
-        .search-wrap input:focus { outline: 2px solid var(--bni-red); }
-        .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); opacity: 0.5; }
-        .ai-btn {
-            background: var(--bni-black); color: white; border: none; padding: 0 20px; border-radius: 10px;
-            font-weight: 700; cursor: pointer; box-shadow: var(--shadow); display: flex; align-items: center; gap: 8px;
-            transition: var(--anim); flex-grow: 0;
-        }
-        .ai-btn:hover { background: var(--bni-red); }
-
-        /* --- MAIN GRID --- */
-        .grid-layout {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 25px; max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;
+        .dc-insight p { 
+            font-size:0.9rem; line-height:1.6; color:#333; font-style:italic; 
         }
 
-        .role-card {
-            background: white; border-radius: var(--radius); box-shadow: var(--shadow);
-            overflow: hidden; border-top: 6px solid #ccc; display: flex; flex-direction: column;
-            transition: var(--anim); position: relative;
+        /* MASTERY FRAMEWORK */
+        .mastery-box { 
+            background:#fcfcfc; border:1px solid #eee; border-radius:12px; 
+            padding:20px; margin-bottom:15px; 
         }
-        .role-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0,0,0,0.1); }
-        
-        .border-president { border-image: linear-gradient(to right, #CF202E, #8A151F) 1; border-top-width: 6px; }
-        .border-vp { border-image: linear-gradient(to right, #2d2d2d, #555) 1; border-top-width: 6px; }
-        .border-st { border-image: linear-gradient(to right, #C5A059, #e6c278) 1; border-top-width: 6px; }
-
-        .card-head { padding: 1.5rem; display: flex; justify-content: space-between; align-items: flex-start; }
-        .head-info h3 { font-size: 1.4rem; font-weight: 800; color: var(--bni-black); margin-bottom: 5px; }
-        .role-badge { background: #f0f0f0; padding: 4px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; color: #555; letter-spacing: 0.5px; }
-        .head-icon { font-size: 2.2rem; opacity: 0.8; }
-
-        .tabs { display: flex; background: #fcfcfc; border-bottom: 1px solid #eee; }
-        .tab {
-            flex: 1; padding: 14px 0; border: none; background: none; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
-            color: #999; cursor: pointer; border-bottom: 3px solid transparent; transition: 0.2s;
+        .mastery-box h5 { 
+            font-size:0.75rem; color:var(--bni-burgundy); text-transform:uppercase; 
+            margin-bottom:10px; display:flex; align-items:center; gap:8px; font-weight:800; 
         }
-        .tab:hover { color: var(--bni-red); background: #f4f4f4; }
-        .tab.active { color: var(--bni-red); border-bottom-color: var(--bni-red); background: white; }
-
-        .panel { display: none; padding: 1.5rem; animation: fadeIn 0.3s; }
-        .panel.active { display: block; }
-
-        /* --- VISUAL ENHANCEMENTS (STATS & LISTS) --- */
-        .resp-list { list-style: none; margin: 15px 0; }
-        .resp-item { padding: 6px 0; display: flex; align-items: flex-start; gap: 8px; font-size: 0.9rem; border-bottom: 1px dashed #eee; }
-        .resp-item:last-child { border-bottom: none; }
-        .resp-icon { color: var(--bni-red); font-weight: bold; }
-
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .stat-box { 
-            background: linear-gradient(145deg, #ffffff, #f5f5f5); border: 1px solid #eee; 
-            padding: 10px; border-radius: 8px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        .discovery-q { 
+            background:#fff5f5; border-left:4px solid var(--bni-red); padding:15px; 
+            margin:10px 0; border-radius:0 8px 8px 0; 
         }
-        .stat-val { display: block; font-weight: 800; color: var(--bni-black); font-size: 1.1rem; }
-        .stat-lbl { font-size: 0.65rem; text-transform: uppercase; font-weight: 700; color: #888; letter-spacing: 0.5px; }
-        .stat-box.time { border-color: #ffe0b2; background: #fff8e1; }
-        .stat-box.time .stat-val { color: #f57f17; }
+        .discovery-q strong { 
+            display:block; color:var(--bni-red); font-size:0.75rem; 
+            text-transform:uppercase; margin-bottom:6px; letter-spacing:0.5px; 
+        }
+        .discovery-q p { 
+            font-size:clamp(0.85rem, 2vw, 0.9rem); font-style:italic; 
+            color:#444; line-height:1.5; 
+        }
+        .discovery-q .shift { 
+            margin-top:10px; color:var(--bni-black); font-weight:700; 
+            font-size:0.85rem; font-style:normal; 
+        }
+        .roi-box { 
+            background:#e6f4ea; border:1px solid #c3e6cb; padding:15px; 
+            border-radius:10px; margin-top:15px; font-weight:700; color:#1e7e34; 
+            font-size:clamp(0.85rem, 2vw, 0.9rem); text-align:center; 
+        }
 
-        /* Checklist Styling */
-        .checklist-group { margin-bottom: 15px; }
-        .checklist-group h5 { 
-            font-size: 0.7rem; text-transform: uppercase; color: #aaa; margin: 10px 0 5px; 
-            font-weight: 800; letter-spacing: 0.5px; display: flex; align-items: center; gap: 5px; 
+        /* LISTS & CHECKLISTS */
+        .resp-list { list-style:none; margin:15px 0; }
+        .resp-item { 
+            padding:6px 0; display:flex; align-items:flex-start; gap:8px; 
+            font-size:clamp(0.85rem, 2vw, 0.9rem); border-bottom:1px dashed #eee; 
+        }
+        .resp-item:last-child { border-bottom:none; }
+        .resp-icon { color:var(--bni-red); font-weight:bold; }
+
+        .cl-group { margin-bottom:15px; }
+        .cl-group h5 { 
+            font-size:0.7rem; text-transform:uppercase; color:#bbb; 
+            margin:15px 0 8px; letter-spacing:1px; font-weight:800; 
+            display:flex; align-items:center; gap:5px; 
         }
         .cl-item { 
-            display: flex; align-items: center; gap: 10px; font-size: 0.85rem; padding: 8px 10px; 
-            background: #fff; border: 1px solid #eee; border-radius: 6px; margin-bottom: 5px; cursor: pointer; transition: 0.2s;
+            display:flex; align-items:center; gap:12px; 
+            font-size:clamp(0.8rem, 2vw, 0.85rem); padding:10px 14px; background:#fff; 
+            border:1px solid #eee; border-radius:8px; margin-bottom:6px; 
+            cursor:pointer; transition:0.2s; 
         }
-        .cl-item:hover { background: #fafafa; border-color: #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .cl-item.done { text-decoration: line-through; opacity: 0.6; background: #f4f4f4; }
-        .cl-check { width: 14px; height: 14px; border: 2px solid var(--bni-gold); border-radius: 3px; flex-shrink: 0; }
-        .cl-item.done .cl-check { background: var(--bni-gold); }
+        .cl-item:hover { border-color:#ccc; transform:translateX(4px); box-shadow:0 2px 5px rgba(0,0,0,0.03); }
+        .cl-item.done { opacity:0.5; text-decoration:line-through; background:#f4f4f4; }
+        .cl-check { width:16px; height:16px; border:2px solid var(--bni-gold); border-radius:4px; flex-shrink:0; }
+        .cl-item.done .cl-check { background:var(--bni-gold); }
 
-        /* Accordion */
-        .acc-item { border: 1px solid #eee; border-radius: 8px; margin-bottom: 10px; overflow: hidden; background: #fff; }
-        .acc-head { padding: 12px 15px; background: #fff; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: 700; font-size: 0.85rem; color: #333; border-bottom: 1px solid transparent; }
-        .acc-head:hover { background: #fff5f5; color: var(--bni-red); }
-        .acc-body { display: none; padding: 15px; background: #fcfcfc; border-top: 1px solid #eee; font-size: 0.85rem; color: #555; }
-        .acc-body.open { display: block; }
-
-        .learn-btn {
-            display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%;
-            background: #e6f4ea; color: #1e7e34; padding: 10px; border-radius: 6px;
-            font-size: 0.8rem; font-weight: 700; border: 1px solid #c3e6cb;
-            text-decoration: none; transition: 0.2s; margin-top: 10px;
+        /* STATS - RESPONSIVE */
+        .stat-grid { 
+            display:grid; grid-template-columns:repeat(auto-fit, minmax(100px, 1fr)); 
+            gap:12px; margin-top:20px; 
         }
-        .learn-btn:hover { background: #d1e7dd; border-color: #1e7e34; }
+        .stat-box { 
+            background:linear-gradient(145deg, #ffffff, #f0f0f0); border:1px solid #eee; 
+            padding:12px; border-radius:10px; text-align:center; 
+            box-shadow:0 2px 5px rgba(0,0,0,0.03);
+        }
+        .stat-val { 
+            display:block; font-weight:900; color:var(--bni-black); 
+            font-size:clamp(1rem, 3vw, 1.2rem); 
+        }
+        .stat-lbl { 
+            font-size:0.65rem; text-transform:uppercase; font-weight:700; 
+            color:#888; margin-top:2px; 
+        }
+        .stat-box.time { background:#fff8e1; border-color:var(--bni-gold); }
+        .stat-box.time .stat-val { color:#f57f17; }
 
-        /* Modal */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 20px; }
-        .modal-content { background: white; width: 100%; max-width: 450px; border-radius: 20px; padding: 25px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); text-align: center; position: relative; }
-        .modal-close { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; color: #999; }
-        .modal-content input { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; font-size: 1rem; margin-bottom: 15px; text-align: center; }
+        /* ACCORDIONS */
+        .acc-item { 
+            border:1px solid #eee; border-radius:10px; margin-bottom:10px; 
+            background:white; overflow:hidden; 
+        }
+        .acc-head { 
+            padding:14px 18px; display:flex; justify-content:space-between; 
+            align-items:center; cursor:pointer; font-weight:700; 
+            font-size:clamp(0.8rem, 2vw, 0.85rem); transition:0.2s; color:#333; 
+        }
+        .acc-head:hover { background:#fff5f5; color:var(--bni-red); }
+        .acc-body { 
+            display:none; padding:20px; background:#fdfdfd; border-top:1px solid #eee; 
+            font-size:clamp(0.8rem, 2vw, 0.85rem); color:#555; 
+        }
+        .acc-body.open { display:block; animation:fadeIn 0.3s; }
 
-        footer { text-align: center; padding: 30px; color: #888; border-top: 1px solid #ddd; margin-top: 40px; background: white; font-size: 0.8rem; }
+        .learn-btn { 
+            display:flex; justify-content:center; align-items:center; gap:8px; width:100%; 
+            background:#e6f4ea; color:#1e7e34; padding:10px; border-radius:6px; 
+            font-size:clamp(0.75rem, 2vw, 0.8rem); font-weight:700; border:1px solid #c3e6cb; 
+            text-decoration:none; transition:0.2s; margin-top:10px; 
+        }
+        .learn-btn:hover { background:#d1e7dd; border-color:#1e7e34; transform:translateY(-2px); }
+
+        /* MODAL - RESPONSIVE */
+        .modal-overlay { 
+            position:fixed; top:0; left:0; width:100%; height:100%; 
+            background:rgba(0,0,0,0.7); backdrop-filter:blur(5px); z-index:2000; 
+            display:none; justify-content:center; align-items:center; padding:20px; 
+        }
+        .modal-content { 
+            background:white; width:100%; max-width:450px; border-radius:20px; 
+            padding:clamp(20px, 4vw, 25px); box-shadow:0 25px 50px rgba(0,0,0,0.5); 
+            text-align:center; position:relative; max-height:90vh; overflow-y:auto;
+        }
+        .modal-close { 
+            position:absolute; top:15px; right:20px; font-size:1.5rem; 
+            cursor:pointer; color:#999; transition:0.2s; z-index:1;
+        }
+        .modal-close:hover { color:var(--bni-red); }
+        .modal-content h3 { 
+            color:var(--bni-red); margin-bottom:10px; 
+            font-size:clamp(1.2rem, 4vw, 1.5rem); 
+        }
+        .modal-content input, .modal-content textarea { 
+            width:100%; padding:12px; border:2px solid #eee; border-radius:10px; 
+            font-size:clamp(0.9rem, 2vw, 1rem); margin:15px 0; text-align:center; 
+            font-family:inherit;
+        }
+        .modal-content textarea { 
+            min-height:100px; text-align:left; resize:vertical; 
+        }
+        .modal-content input:focus, .modal-content textarea:focus { 
+            outline:none; border-color:var(--bni-red); 
+        }
+
+        /* DEFICIENCY MATCHER SPECIFIC */
+        .learning-match { 
+            background:linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); 
+            padding:20px; border-radius:12px; margin-top:15px; text-align:left; 
+            border:2px solid #4caf50;
+        }
+        .learning-match h4 { 
+            color:#1b5e20; font-size:1rem; margin-bottom:10px; 
+        }
+        .learning-resources { 
+            display:grid; gap:10px; margin-top:15px; 
+        }
+        .resource-link { 
+            background:white; padding:12px 15px; border-radius:8px; 
+            display:flex; align-items:center; gap:10px; text-decoration:none; 
+            color:#333; font-weight:600; font-size:0.85rem; transition:0.2s; 
+            border:1px solid #e0e0e0;
+        }
+        .resource-link:hover { 
+            background:#f5f5f5; border-color:#4caf50; transform:translateX(5px); 
+        }
+
+        footer { 
+            text-align:center; padding:40px 20px; color:#aaa; font-size:0.8rem; 
+            border-top:1px solid #eee; margin-top:50px; background:white; 
+        }
+
+        @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
         
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* MOBILE SPECIFIC */
+        @media (max-width: 768px) { 
+            .grid-layout { grid-template-columns:1fr; gap:20px; }
+            .widget-container { grid-template-columns:1fr; gap:20px; }
+            .hero { border-radius:0 0 25px 25px; }
+            .controls { flex-direction:column; }
+            .ai-btn { width:100%; justify-content:center; }
+        }
     </style>
 </head>
 <body>
 
 <div class="nav-sticky">
     <nav class="global-nav">
-        <a href="https://bni-bangalore.in/" target="_blank" class="nav-pill">🇮🇳 BNI Bangalore</a>
+        <a href="https://bni-bangalore.in/" target="_blank" class="nav-pill active">🇮🇳 BNI Bangalore</a>
         <a href="https://www.bniconnectglobal.com/" target="_blank" class="nav-pill">🔗 Connect</a>
         <a href="https://www.schoox.com/login.php" target="_blank" class="nav-pill">🎓 B.Builder</a>
         <a href="https://www.bnipodcast.com/" target="_blank" class="nav-pill">🎙️ Podcast</a>
-        <a href="https://bni.com/events" target="_blank" class="nav-pill active">🌍 Global</a>
+        <a href="https://bni.com/events" target="_blank" class="nav-pill">🌍 Global</a>
     </nav>
 </div>
 
 <header class="hero">
     <h1>BNI Leadership Excellence Hub</h1>
-    <h2>Interactive Organizational Command Center</h2>
-    
+    <h2>Miracle Chapter | DC Mastery & Operations Command Center</h2>
     <a href="https://bni-bangalore.in/en-IN/chapterdetail?chapterId=TDQwn4Iw00%2BQ8deYpVUhgA%3D%3D&name=BNI%20Miracle" target="_blank" class="chapter-btn">
         🌟 BNI Miracle Chapter
     </a>
-
     <div class="quote-wrapper">
         <div class="quote-text visible" id="quoteTarget">"Givers Gain® is not just a motto, it is a way of life." — Dr. Ivan Misner</div>
     </div>
@@ -241,52 +416,118 @@
 
 <div class="widget-container">
     <div class="widget">
-        <div class="widget-head">Org Structure (Tap to Navigate)</div>
+        <div class="widget-head">
+            <span>Org Structure</span>
+            <span style="color:var(--bni-red); font-weight:normal; font-size:0.65rem;">Tap to Navigate</span>
+        </div>
         <div class="org-track">
-            <div class="org-card" style="border-left-color: var(--bni-red)" onclick="scrollToCard('president')"><h4>PRESIDENT</h4><span>Strategy</span></div>
-            <div class="org-card" style="border-left-color: var(--bni-black)" onclick="scrollToCard('vp')"><h4>VICE PRES</h4><span>Success</span></div>
-            <div class="org-card" style="border-left-color: var(--bni-gold)" onclick="scrollToCard('st')"><h4>SEC/TREAS</h4><span>Operations</span></div>
-            <div class="org-card" onclick="scrollToCard('vp', 1)"><h4>Success Comm</h4><span>Team VP</span></div>
-            <div class="org-card" onclick="scrollToCard('president', 1)"><h4>Growth Team</h4><span>Team Pres</span></div>
+            <div class="org-card" style="border-left-color:var(--bni-red)" onclick="scrollToCard('president')"><h4>PRESIDENT</h4><span>Strategy Wing</span></div>
+            <div class="org-card" style="border-left-color:var(--bni-black)" onclick="scrollToCard('vp')"><h4>VICE PRES</h4><span>Performance</span></div>
+            <div class="org-card" style="border-left-color:var(--bni-gold)" onclick="scrollToCard('st')"><h4>SEC/TREAS</h4><span>Operations</span></div>
+            <div class="org-card" onclick="scrollToCard('vp', 1)"><h4>Success Team</h4><span>VP Wing</span></div>
+            <div class="org-card" onclick="scrollToCard('president', 1)"><h4>Growth Team</h4><span>Pres Wing</span></div>
         </div>
     </div>
     <div class="widget">
-        <div class="widget-head">Upcoming Schedule <span style="color:var(--bni-red)">Live</span></div>
-        <div class="timeline" id="calendarList">
-            </div>
+        <div class="widget-head">
+            <span>Upcoming Events</span>
+            <span style="color:var(--bni-red);">●</span>
+        </div>
+        <div class="timeline" id="calendarList"></div>
     </div>
 </div>
 
 <div class="controls">
     <div class="search-wrap">
         <span class="search-icon">🔍</span>
-        <input type="text" id="searchInput" placeholder="Search roles, tasks, or metrics..." onkeyup="filterGrid()">
+        <input type="text" id="searchInput" placeholder="Search roles, tasks, or skills..." onkeyup="filterGrid()">
     </div>
-    <button class="ai-btn" onclick="openModal()">🤖 Matcher</button>
+    <button class="ai-btn" onclick="openModal('matcher')">🤖 Role Matcher</button>
+    <button class="ai-btn" style="background:var(--bni-burgundy);" onclick="openModal('deficiency')">🎯 Growth Advisor</button>
 </div>
 
 <main class="grid-layout" id="mainGrid"></main>
 
 <footer>
     <p><strong>BNI Miracle</strong> | Platinum Excellence Standards</p>
-    <p>© 2026 BNI Global. Designed for Leadership Success.</p>
+    <p>© 2026 BNI Global. Givers Gain® | Secured Leadership Platform</p>
 </footer>
 
-<div class="modal-overlay" id="aiModal" onclick="closeModal(event)">
+<!-- ROLE MATCHER MODAL -->
+<div class="modal-overlay" id="matcherModal" onclick="closeModal(event, 'matcher')">
     <div class="modal-content">
-        <div class="modal-close" onclick="closeModal({target:{id:'aiModal'}})">×</div>
-        <h3 style="color:var(--bni-red)">🤖 Role Matcher</h3>
-        <p style="color:#666; margin-bottom:15px">Try: "Social", "Money", "Rules", "Teaching"</p>
-        <input type="text" id="aiInput" placeholder="Skill or interest..." onkeyup="runAI()">
-        <div id="aiOutput"></div>
+        <div class="modal-close" onclick="closeModal({target:{id:'matcherModal'}}, 'matcher')">×</div>
+        <h3>🤖 AI Role Matcher</h3>
+        <p style="color:#666; margin-bottom:10px; font-size:0.9rem;">Try: "Social", "Money", "Rules", "Teaching"</p>
+        <input type="text" id="matcherInput" placeholder="Enter skill or interest..." onkeyup="runMatcher()">
+        <div id="matcherOutput"></div>
+    </div>
+</div>
+
+<!-- GROWTH ADVISOR MODAL -->
+<div class="modal-overlay" id="deficiencyModal" onclick="closeModal(event, 'deficiency')">
+    <div class="modal-content">
+        <div class="modal-close" onclick="closeModal({target:{id:'deficiencyModal'}}, 'deficiency')">×</div>
+        <h3>🎯 BNI Growth Advisor</h3>
+        <p style="color:#666; margin-bottom:15px; font-size:0.9rem; line-height:1.5;">
+            What business skill would you like to develop? (e.g., "public speaking", "financial management", "conflict resolution", "team building")
+        </p>
+        <textarea id="deficiencyInput" placeholder="Describe your growth area..." onkeyup="runDeficiencyMatcher()"></textarea>
+        <div id="deficiencyOutput"></div>
     </div>
 </div>
 
 <script>
+    // SECURITY: Input sanitization
+    function sanitizeInput(str) {
+        if (!str) return '';
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR5TU1qmAYJtODRDEnC6Xuv7zcIWsQspuz99hEKMfywqoDeu0GL-aFZEiov8CtpF1hKW1X-3Oi6LTre/pub?gid=100496383&single=true&output=csv';
 
-    // *** 1. RICH DATASET (Hardcoded Backup) ***
-    // This ensures 100% functionality and perfect formatting instantly.
+    // EXPANDED BNI QUOTE LIBRARY
+    const bniQuotes = [
+        { text: "Givers Gain® is not just a motto, it is a way of life.", author: "Dr. Ivan Misner" },
+        { text: "Your net worth is directly proportional to your network.", author: "Dr. Ivan Misner" },
+        { text: "Networking is more about farming than it is about hunting.", author: "Dr. Ivan Misner" },
+        { text: "It's not about who you know, it's about who knows you and what you do.", author: "BNI Philosophy" },
+        { text: "The best way to get business is to give business.", author: "BNI Core Value" },
+        { text: "Visibility creates credibility, credibility creates profitability.", author: "Dr. Ivan Misner" },
+        { text: "Your BNI role is a business mirror. What you see in the chapter exists in your office.", author: "DC Wisdom" },
+        { text: "Build relationships first, profits second.", author: "BNI Foundation" },
+        { text: "People do business with people they know, like, and trust.", author: "BNI Principle" },
+        { text: "The fortune is in the follow-up.", author: "Networking Mastery" },
+        { text: "Referrals are the currency of trust.", author: "BNI Culture" },
+        { text: "Leadership is not a title; it is a demonstrable capacity for service.", author: "DC Philosophy" },
+        { text: "Correcting a member is a skill; doing it with Givers Gain® is mastery.", author: "DC Training" },
+        { text: "Build the chapter to scale your business. Lead locally, grow globally.", author: "BNI Strategy" },
+        { text: "The best leaders create more leaders, not followers.", author: "Leadership Excellence" },
+        { text: "What you permit, you promote. What you tolerate becomes your standard.", author: "Accountability Mastery" },
+        { text: "Specific asks get specific results.", author: "BNI Weekly Presentation" },
+        { text: "Quality referrals come from quality relationships.", author: "Referral Philosophy" },
+        { text: "Your 30-second pitch should create curiosity, not confusion.", author: "BNI Communication" },
+        { text: "Culture eats strategy for breakfast.", author: "Business Wisdom" }
+    ];
+
+    // CALENDAR EVENTS
+    const events = [
+        { d: '12', m: 'FEB', t: 'Chapter Meeting', s: '7:30 AM | Miracle Venue', tag: 'Meeting', c: 'green' },
+        { d: '18', m: 'FEB', t: 'LT Roundtable', s: 'Regional Training', tag: 'Training', c: 'blue' },
+        { d: '25', m: 'FEB', t: 'Global Convention', s: 'International Online', tag: 'Global', c: 'gold' },
+        { d: '05', m: 'MAR', t: 'Power Team Summit', s: 'Contact Sphere Alignment', tag: 'Growth', c: 'green' }
+    ];
+
+    // DC STRATEGIC INSIGHTS (Enhanced for each team)
+    const dcInsights = {
+        president: "The President's role teaches 'Temporal Leadership.' Master the 90-minute meeting, and you master the art of running high-stakes business operations with precision and energy. Every meeting is a masterclass in executive presence.",
+        vp: "The VP role is your 'Accountability Laboratory.' You learn the crucial skill of holding strong personalities accountable while maintaining relationships. This translates directly to managing high-performing teams in your business.",
+        st: "The S/T role builds 'Operational Discipline.' Managing chapter finances and logistics teaches you to create repeatable systems that don't depend on your personal presence—the foundation of a scalable, sellable business."
+    };
+
+    // COMPREHENSIVE ROLE DATA
     const RICH_DATA = [
         // VP TEAM
         { 
@@ -294,56 +535,72 @@
             Roles: ['Organize social events/coffee connects.', 'Celebrate member birthdays/milestones.', 'Welcome new members into the culture.', 'Check in on sick/absent members.', 'Promote "Givers Gain" stories.'],
             Checklist: { pre:['Plan upcoming social topic'], dur:['Share culture moment'], post:['Post photos to group'] },
             KPIs: [{l:'Morale',v:'High'}, {l:'Events',v:'1/Mo'}],
-            Link: 'https://bni.com', LearnName: 'Culture Builder'
+            Link: 'https://bni.com', LearnName: 'Culture Builder',
+            MasteryQ: 'Do you intentionally build culture in your business, or is it accidental?',
+            MasteryShift: 'Community Builders learn that culture is engineered, not inherited. You become the culture architect of your own company.'
         },
         { 
             Group:'VP', RoleTitle:'Retention Specialist', Description:'Focuses on member renewals (90 days out).', Time:'2h/wk',
             Roles: ['Monitor Membership Dues Report.', 'Contact members 90 days before expiry.', 'Conduct happiness/exit interviews.', 'Identify "at-risk" members early.', 'Report retention stats to VP.'],
             Checklist: { pre:['Pull Expiry Report'], dur:['Report renewals due'], post:['Call 2 expiring members'] },
             KPIs: [{l:'Retention',v:'85%+'}, {l:'Late',v:'0'}],
-            Link: 'https://bniconnectglobal.com', LearnName: 'Retention Strat'
+            Link: 'https://bniconnectglobal.com', LearnName: 'Retention Strategy',
+            MasteryQ: 'Do you lose customers at the back door while chasing new ones at the front?',
+            MasteryShift: 'Retention mastery teaches that keeping customers is 5x cheaper than acquiring new ones. You build loyalty systems.'
         },
         { 
             Group:'VP', RoleTitle:'Quality Assurance', Description:'Vets applications & references.', Time:'2h/wk',
             Roles: ['Review new member applications.', 'Conduct reference checks (calls).', 'Interview applicants (classification).', 'Ensure no classification conflicts.', 'Report findings to MC.'],
             Checklist: { pre:['Review pending apps'], dur:['Report clear/conflict'], post:['Call 3 references'] },
             KPIs: [{l:'Refs Chk',v:'100%'}, {l:'Speed',v:'<48hrs'}],
-            Link: 'https://schoox.com', LearnName: 'QC Standards'
+            Link: 'https://schoox.com', LearnName: 'QC Standards',
+            MasteryQ: 'Are you vetting your clients as carefully as they vet you?',
+            MasteryShift: 'QA specialists learn to say "no" to bad-fit clients. You become selective, not desperate.'
         },
         { 
             Group:'VP', RoleTitle:'Member Engagement', Description:'Tracks participation (121s, CEUs).', Time:'1h/wk',
             Roles: ['Monitor PALMS for low activity.', 'Encourage 121s and CEUs.', 'Recognize top performers.', 'Coach members in the "Grey/Red".', 'Promote regional training.'],
             Checklist: { pre:['Check PALMS report'], dur:['Recognize Top CEU'], post:['Call 1 low-activity member'] },
             KPIs: [{l:'Traffic',v:'Green'}, {l:'121s',v:'High'}],
-            Link: 'https://bniconnectglobal.com', LearnName: 'Engage Tech'
+            Link: 'https://bniconnectglobal.com', LearnName: 'Engagement Tech',
+            MasteryQ: 'Do you know which of your team members are disengaged before they quit?',
+            MasteryShift: 'Engagement roles teach early-warning systems. You spot problems before they become crises.'
         },
         { 
             Group:'VP', RoleTitle:'Attendance Specialist', Description:'Tracks absences and lates.', Time:'1h/wk',
             Roles: ['Mark attendance in PALMS weekly.', 'Monitor 3-absence rule.', 'Send attendance warning letters.', 'Call absent members to check-in.', 'Report chronic lateness to VP.'],
             Checklist: { pre:['Print sign-in sheet'], dur:['Monitor late arrivals'], post:['Enter PALMS data'] },
             KPIs: [{l:'Absences',v:'<5%'}, {l:'Lates',v:'0'}],
-            Link: 'https://bniconnectglobal.com', LearnName: 'Attendance Pol'
+            Link: 'https://bniconnectglobal.com', LearnName: 'Attendance Policy',
+            MasteryQ: 'Do you tolerate chronic lateness in your office?',
+            MasteryShift: 'Attendance Specialists learn that "what you permit, you promote." You build accountability culture.'
         },
         { 
             Group:'VP', RoleTitle:'Member Relations', Description:'Handles disputes and conflict.', Time:'As Needed',
             Roles: ['Act as the "Conflict Manager".', 'Listen to member complaints neutrally.', 'Consult with VP/Director on policy.', 'Facilitate mediation between members.', 'Ensure Code of Ethics is followed.'],
             Checklist: { pre:['Check complaint inbox'], dur:['Observe member interactions'], post:['Follow up on open cases'] },
             KPIs: [{l:'Resolution',v:'100%'}, {l:'Time',v:'<1 Wk'}],
-            Link: 'https://schoox.com', LearnName: 'Conflict Mastery'
+            Link: 'https://schoox.com', LearnName: 'Conflict Mastery',
+            MasteryQ: 'Do you avoid difficult conversations until they explode?',
+            MasteryShift: 'Member Relations roles teach "Crucial Conversations." You become comfortable with discomfort.'
         },
         { 
             Group:'VP', RoleTitle:'Referral Quality', Description:'Audits referral legitimacy.', Time:'1h/wk',
             Roles: ['Randomly audit passed referrals.', 'Call referral receivers for feedback.', 'Verify "Closed Business" amounts.', 'Educate on Lead vs. Referral.', 'Track internal vs. external refs.'],
             Checklist: { pre:['Select 3 refs to audit'], dur:['Give quality tip'], post:['Call receivers'] },
             KPIs: [{l:'Conversion',v:'High'}, {l:'Fake',v:'0'}],
-            Link: 'https://schoox.com', LearnName: 'Ref Reality'
+            Link: 'https://schoox.com', LearnName: 'Ref Reality',
+            MasteryQ: 'Is your revenue reporting system honest and accurate?',
+            MasteryShift: 'Referral Quality mastery teaches integrity metrics. You build trust through transparency.'
         },
         { 
             Group:'VP', RoleTitle:'Mentor Specialist', Description:'Manages Passport program.', Time:'3h/wk',
             Roles: ['Assign mentors to new members.', 'Track Passport to Success progress.', 'Schedule induction for graduates.', 'Train mentors on their role.', 'Ensure new members feel supported.'],
             Checklist: { pre:['Check Passport status'], dur:['Meet new members'], post:['Assign mentor pairings'] },
             KPIs: [{l:'Passport',v:'100%'}, {l:'Grads',v:'All'}],
-            Link: 'https://schoox.com', LearnName: 'Mentor Kit'
+            Link: 'https://schoox.com', LearnName: 'Mentor Kit',
+            MasteryQ: 'Do you have a structured onboarding process for new employees?',
+            MasteryShift: 'Mentor roles teach systematic onboarding. You reduce new-hire failure rates dramatically.'
         },
 
         // PRESIDENT TEAM
@@ -352,56 +609,72 @@
             Roles: ['Select weekly networking topic.', 'Prepare 3-5 min presentation.', 'Coordinate with S/T for slides.', 'Engage members with questions.', 'Promote BNI Podcast episodes.'],
             Checklist: { pre:['Prepare slides/script'], dur:['Deliver 3m slot'], post:['Share link to content'] },
             KPIs: [{l:'Slot',v:'Weekly'}, {l:'Value',v:'High'}],
-            Link: 'https://schoox.com', LearnName: 'Edu Toolkit'
+            Link: 'https://schoox.com', LearnName: 'Edu Toolkit',
+            MasteryQ: 'Are you seen as a subject matter expert or just another vendor?',
+            MasteryShift: 'Education Coordinators build "thought leadership." You become the industry authority.'
         },
         { 
             Group:'President', RoleTitle:'BNI Connect Coord', Description:'Updates roster online.', Time:'1h/wk',
             Roles: ['Ensure all profiles have photos.', 'Update leadership team titles.', 'Remove dropped members promptly.', 'Help members fix profile keywords.', 'Teach members Connect basics.'],
             Checklist: { pre:['Check roster accuracy'], dur:['Tech tip of week'], post:['Update changes'] },
             KPIs: [{l:'Accuracy',v:'100%'}, {l:'Photos',v:'100%'}],
-            Link: 'https://bniconnectglobal.com', LearnName: 'Connect Basics'
+            Link: 'https://bniconnectglobal.com', LearnName: 'Connect Basics',
+            MasteryQ: 'Is your online presence accurate and professional?',
+            MasteryShift: 'Connect Coordinators learn digital brand management. You control your online reputation.'
         },
         { 
             Group:'President', RoleTitle:'Power Team Coord', Description:'Organizes Contact Spheres.', Time:'2h/wk',
             Roles: ['Identify Power Team groups.', 'Schedule monthly PT meetings.', 'Identify missing professions.', 'Review referral flow within PTs.', 'Report PT success to President.'],
             Checklist: { pre:['Review PT stats'], dur:['Announce PT meeting'], post:['Schedule next one'] },
             KPIs: [{l:'PT Mtg',v:'1/Mo'}, {l:'Refs',v:'High'}],
-            Link: 'https://schoox.com', LearnName: 'PT Guide'
+            Link: 'https://schoox.com', LearnName: 'PT Guide',
+            MasteryQ: 'Do you understand your business ecosystem and strategic partnerships?',
+            MasteryShift: 'Power Team mastery teaches "ecosystem thinking." You build symbiotic business relationships.'
         },
         { 
             Group:'President', RoleTitle:'Joint Call Coord', Description:'Arranges sales calls.', Time:'1h/wk',
             Roles: ['Identify synergistic pairs.', 'Schedule joint sales calls.', 'Coach on "Edifying" partners.', 'Track revenue from joint calls.', 'Share success stories.'],
             Checklist: { pre:['Identify pair'], dur:['Share success story'], post:['Follow up on call'] },
             KPIs: [{l:'Calls',v:'4/Mo'}, {l:'$$$',v:'High'}],
-            Link: 'https://schoox.com', LearnName: 'Sales Synergy'
+            Link: 'https://schoox.com', LearnName: 'Sales Synergy',
+            MasteryQ: 'Are you leveraging partnerships to multiply your sales reach?',
+            MasteryShift: 'Joint Call mastery teaches collaborative selling. You 10x your reach through others.'
         },
         { 
             Group:'President', RoleTitle:'121 Coordinator', Description:'Encourages face-to-face meetings.', Time:'1h/wk',
             Roles: ['Run 121 report from PALMS.', 'Identify members with 0 121s.', 'Match members for 121s.', 'Promote the GAINS sheet.', 'Organize "Stack Days".'],
             Checklist: { pre:['Run 121 report'], dur:['Assign random 121s'], post:['Check completion'] },
             KPIs: [{l:'Partic.',v:'100%'}, {l:'Avg',v:'1/Wk'}],
-            Link: 'https://schoox.com', LearnName: 'Givers Gain'
+            Link: 'https://schoox.com', LearnName: 'Givers Gain',
+            MasteryQ: 'Are you meeting the right people consistently?',
+            MasteryShift: '121 Coordinators learn "relational capitalism." You build wealth through relationships.'
         },
         { 
             Group:'President', RoleTitle:'TYFCB Coordinator', Description:'Tracks revenue.', Time:'1h/wk',
             Roles: ['Ensure slips are entered online.', 'Audit large slips (>1Lakh).', 'Announce "Notable Networkers".', 'Track Seat Value.', 'Motivate members to thank others.'],
             Checklist: { pre:['Audit online slips'], dur:['Announce totals'], post:['Verify large slips'] },
             KPIs: [{l:'Entered',v:'100%'}, {l:'Verify',v:'100%'}],
-            Link: 'https://bniconnectglobal.com', LearnName: 'Rev Tracking'
+            Link: 'https://bniconnectglobal.com', LearnName: 'Rev Tracking',
+            MasteryQ: 'Do you know your exact customer acquisition cost and lifetime value?',
+            MasteryShift: 'TYFCB roles teach revenue transparency. You make data-driven business decisions.'
         },
         { 
             Group:'President', RoleTitle:'Weekly Pres Coord', Description:'Trains on 30-sec pitch.', Time:'1h/wk',
             Roles: ['Manage weekly speaker order.', 'Check timing device/bell.', 'Remind members of the theme.', 'Ensure "Specific Asks".', 'Stop members who go over time.'],
             Checklist: { pre:['Set roster order'], dur:['Time speeches'], post:['Review feedback'] },
             KPIs: [{l:'Quality',v:'High'}, {l:'Time',v:'Perfect'}],
-            Link: 'https://schoox.com', LearnName: 'Pres Skills'
+            Link: 'https://schoox.com', LearnName: 'Pres Skills',
+            MasteryQ: 'Can you articulate your value proposition in 30 seconds?',
+            MasteryShift: 'Presentation mastery teaches clarity and concision. You become a master communicator.'
         },
         { 
             Group:'President', RoleTitle:'Pre-induction Coord', Description:'Orientates inductees.', Time:'As Needed',
             Roles: ['Meet with approved applicant.', 'Review expectations/costs.', 'Collect bio/photo.', 'Prepare New Member Kit.', 'Schedule induction date.'],
             Checklist: { pre:['Prep Member Kit'], dur:['Conduct orientation'], post:['Confirm induction'] },
             KPIs: [{l:'Ready',v:'100%'}, {l:'Info',v:'Clear'}],
-            Link: 'https://schoox.com', LearnName: 'Onboarding'
+            Link: 'https://schoox.com', LearnName: 'Onboarding',
+            MasteryQ: 'Do you have a world-class client onboarding experience?',
+            MasteryShift: 'Pre-Induction teaches "first impression mastery." You create memorable client experiences.'
         },
 
         // ST TEAM
@@ -410,104 +683,249 @@
             Roles: ['Maintain 8-week schedule.', 'Collect bio sheet 1 week prior.', 'Ensure door prize is ready.', 'Coach speaker on topic.', 'Fill gaps in schedule.'],
             Checklist: { pre:['Confirm next week'], dur:['Intro speaker'], post:['Update schedule'] },
             KPIs: [{l:'Gaps',v:'0'}, {l:'Bio',v:'100%'}],
-            Link: 'https://bniconnectglobal.com', LearnName: 'Pres Mgmt'
+            Link: 'https://bniconnectglobal.com', LearnName: 'Pres Mgmt',
+            MasteryQ: 'Do you plan your content marketing 8 weeks in advance?',
+            MasteryShift: 'Feature Presentation roles teach strategic content planning. You become proactive, not reactive.'
         },
         { 
             Group:'ST', RoleTitle:'Go Green Spec', Description:'Helps members reach Green.', Time:'1h/wk',
             Roles: ['Analyze Traffic Light report.', 'Identify "easy wins" for Amber members.', 'Explain the Power of One.', 'Celebrate Green members.', 'Coach Red/Grey members.'],
             Checklist: { pre:['Analyze Report'], dur:['Tip of week'], post:['Call 1 Amber member'] },
             KPIs: [{l:'Green',v:'70%+'}, {l:'Red',v:'0'}],
-            Link: 'https://bnipowerofone.com', LearnName: 'Power of One'
+            Link: 'https://bnipowerofone.com', LearnName: 'Power of One',
+            MasteryQ: 'Do you know which performance metrics move your business forward?',
+            MasteryShift: 'Go Green mastery teaches "leading indicators." You focus on what predicts success.'
         },
         { 
             Group:'ST', RoleTitle:'Lead Visitor Host', Description:'Manages greeting team.', Time:'4h/wk',
             Roles: ['Arrive 30 mins early.', 'Set up visitor table/badges.', 'Assign host roles (Greeter, etc).', 'Collect visitor sheets.', 'Conduct visitor orientation.'],
             Checklist: { pre:['Arrive early'], dur:['Greet everyone'], post:['Enter visitor data'] },
             KPIs: [{l:'Exp',v:'High'}, {l:'Conv',v:'20%'}],
-            Link: 'https://schoox.com', LearnName: 'Host Cert'
+            Link: 'https://schoox.com', LearnName: 'Host Cert',
+            MasteryQ: 'Is your customer welcome experience world-class?',
+            MasteryShift: 'Visitor Hosting teaches hospitality excellence. You create "wow" first impressions.'
         },
         { 
             Group:'ST', RoleTitle:'Training Coord', Description:'Promotes MSP/Advanced.', Time:'1h/wk',
             Roles: ['Review regional training calendar.', 'Announce upcoming workshops.', 'Track member CEUs.', 'Organize group training trips.', 'Ensure new members do MSP.'],
             Checklist: { pre:['Check calendar'], dur:['Promote event'], post:['Track attendees'] },
             KPIs: [{l:'CEUs',v:'High'}, {l:'MSP',v:'100%'}],
-            Link: 'https://bni-bangalore.in', LearnName: 'Training Lead'
+            Link: 'https://bni-bangalore.in', LearnName: 'Training Lead',
+            MasteryQ: 'Are you investing in continuous professional development?',
+            MasteryShift: 'Training Coordinators become lifelong learners. You stay ahead of industry changes.'
         },
         { 
             Group:'ST', RoleTitle:'Socials Coord', Description:'Plans quarterly parties.', Time:'Var',
             Roles: ['Poll members for dates.', 'Scout and book venues.', 'Collect payments.', 'Plan games/activities.', 'Ensure maximum attendance.'],
             Checklist: { pre:['Book venue'], dur:['Host event'], post:['Share photos'] },
             KPIs: [{l:'Attd',v:'75%'}, {l:'Fun',v:'Max'}],
-            Link: 'https://bni.com', LearnName: 'Event Plan'
+            Link: 'https://bni.com', LearnName: 'Event Plan',
+            MasteryQ: 'Do you build relationships with your team outside of work?',
+            MasteryShift: 'Socials Coordinators learn that "teams that play together, stay together." You build loyalty.'
         },
         { 
             Group:'ST', RoleTitle:'Communications Spec', Description:'Branding & Social Media.', Time:'2h/wk',
             Roles: ['Take photos during meeting.', 'Post to FB/LinkedIn/Insta.', 'Create recognition flyers.', 'Ensure logo usage compliance.', 'Promote member businesses.'],
             Checklist: { pre:['Charge camera'], dur:['Take photos'], post:['Post updates'] },
             KPIs: [{l:'Posts',v:'3/Wk'}, {l:'Brand',v:'100%'}],
-            Link: 'https://bni.com', LearnName: 'Brand Std'
+            Link: 'https://bni.com', LearnName: 'Brand Std',
+            MasteryQ: 'Is your brand message consistent across all channels?',
+            MasteryShift: 'Communications roles teach integrated marketing. You amplify your reach systematically.'
         },
         { 
             Group:'ST', RoleTitle:'BBB Coordinator', Description:'Cross-chapter networking.', Time:'1h/wk',
             Roles: ['Find international chapters.', 'Arrange joint online meetings.', 'Share global success stories.', 'Help members find global refs.', 'Promote BNI Global events.'],
             Checklist: { pre:['Find partner'], dur:['Host joint call'], post:['Share contacts'] },
             KPIs: [{l:'Global',v:'High'}, {l:'Refs',v:'Active'}],
-            Link: 'https://bniconnectglobal.com', LearnName: 'Networking'
+            Link: 'https://bniconnectglobal.com', LearnName: 'Networking',
+            MasteryQ: 'Is your business globally aware and connected?',
+            MasteryShift: 'BBB roles teach global mindset. You think beyond local markets.'
         },
         { 
             Group:'ST', RoleTitle:'Online Host', Description:'Manages Zoom/Hybrid tech.', Time:'Mtg',
             Roles: ['Start meeting 15 mins early.', 'Manage breakout rooms.', 'Spotlight speakers.', 'Mute distractions.', 'Play music during breaks.'],
             Checklist: { pre:['Test Audio/Video'], dur:['Manage Mutes'], post:['Save Chat'] },
             KPIs: [{l:'Tech',v:'Smooth'}, {l:'Issues',v:'0'}],
-            Link: 'https://zoom.us', LearnName: 'Zoom Master'
+            Link: 'https://zoom.us', LearnName: 'Zoom Master',
+            MasteryQ: 'Are you proficient with remote collaboration technology?',
+            MasteryShift: 'Online Hosting teaches digital leadership. You stay relevant in a hybrid world.'
         }
     ];
 
-    // Calendar Data
-    const events = [
-        { d: '12', m: 'FEB', t: 'Chapter Meeting', s: '7:30 AM | Miracle Venue', tag: 'Meeting', c: 'green' },
-        { d: '18', m: 'FEB', t: 'LT Roundtable', s: 'Regional Training', tag: 'Training', c: 'blue' },
-        { d: '25', m: 'FEB', t: 'Global Convention', s: 'International Online', tag: 'Global', c: 'gold' }
-    ];
+    // DEFICIENCY TO LEARNING MAPPING
+    const deficiencyMap = {
+        'public speaking': {
+            title: 'Public Speaking & Presentation Mastery',
+            roles: ['Weekly Pres Coordinator', 'Feature Pres Specialist', 'Education Coordinator'],
+            resources: [
+                { name: 'BNI Weekly Presentation Training', url: 'https://www.schoox.com/login.php', icon: '🎓' },
+                { name: 'BNI Podcast: Effective Presentations', url: 'https://www.bnipodcast.com/', icon: '🎙️' },
+                { name: 'Toastmasters Partnership Program', url: 'https://bni.com', icon: '🗣️' }
+            ]
+        },
+        'financial': {
+            title: 'Financial Management & Accountability',
+            roles: ['Sec/Treasurer', 'TYFCB Coordinator', 'Go Green Specialist'],
+            resources: [
+                { name: 'S/T Certification Program', url: 'https://www.schoox.com/login.php', icon: '💰' },
+                { name: 'PALMS Financial Training', url: 'https://bniconnectglobal.com', icon: '📊' },
+                { name: 'BNI Revenue Tracking Mastery', url: 'https://www.schoox.com/login.php', icon: '📈' }
+            ]
+        },
+        'conflict': {
+            title: 'Conflict Resolution & Difficult Conversations',
+            roles: ['Member Relations', 'Vice President', 'Mentor Specialist'],
+            resources: [
+                { name: 'VP Conflict Mastery Module', url: 'https://www.schoox.com/login.php', icon: '⚖️' },
+                { name: 'Crucial Conversations Workshop', url: 'https://bni-bangalore.in', icon: '💬' },
+                { name: 'Member Relations Certification', url: 'https://www.schoox.com/login.php', icon: '🤝' }
+            ]
+        },
+        'team': {
+            title: 'Team Building & Culture Development',
+            roles: ['Community Builder', 'Socials Coordinator', 'President'],
+            resources: [
+                { name: 'Culture Builder Training', url: 'https://bni.com', icon: '🌟' },
+                { name: 'Leadership Team Workshop', url: 'https://bni-bangalore.in', icon: '👥' },
+                { name: 'BNI Culture Certification', url: 'https://www.schoox.com/login.php', icon: '🎭' }
+            ]
+        },
+        'networking': {
+            title: 'Strategic Networking & Referral Generation',
+            roles: ['121 Coordinator', 'Power Team Coordinator', 'BBB Coordinator'],
+            resources: [
+                { name: 'Givers Gain Foundation Course', url: 'https://www.schoox.com/login.php', icon: '🤝' },
+                { name: 'Power Team Strategy Guide', url: 'https://www.schoox.com/login.php', icon: '⚡' },
+                { name: 'BNI Podcast: Networking Mastery', url: 'https://www.bnipodcast.com/', icon: '🎙️' }
+            ]
+        },
+        'leadership': {
+            title: 'Executive Leadership & Strategy',
+            roles: ['President', 'Vice President', 'Sec/Treasurer'],
+            resources: [
+                { name: 'BNI President Certification', url: 'https://www.schoox.com/login.php', icon: '👔' },
+                { name: 'Leadership Excellence Program', url: 'https://bni-bangalore.in', icon: '🏆' },
+                { name: 'Director Consultant Mentorship', url: 'https://bni.com', icon: '🎯' }
+            ]
+        },
+        'marketing': {
+            title: 'Marketing & Brand Communication',
+            roles: ['Communications Specialist', 'BNI Connect Coordinator', 'Education Coordinator'],
+            resources: [
+                { name: 'BNI Brand Standards Training', url: 'https://bni.com', icon: '📱' },
+                { name: 'Social Media for Business', url: 'https://www.schoox.com/login.php', icon: '📲' },
+                { name: 'Digital Marketing Mastery', url: 'https://bni-bangalore.in', icon: '💻' }
+            ]
+        },
+        'sales': {
+            title: 'Sales Strategy & Revenue Growth',
+            roles: ['Joint Call Coordinator', 'Referral Quality', 'TYFCB Coordinator'],
+            resources: [
+                { name: 'BNI Sales Synergy Workshop', url: 'https://www.schoox.com/login.php', icon: '💼' },
+                { name: 'Referral Quality Standards', url: 'https://www.schoox.com/login.php', icon: '✅' },
+                { name: 'Revenue Acceleration Training', url: 'https://bni-bangalore.in', icon: '🚀' }
+            ]
+        },
+        'customer': {
+            title: 'Customer Experience & Retention',
+            roles: ['Retention Specialist', 'Lead Visitor Host', 'Quality Assurance'],
+            resources: [
+                { name: 'Retention Strategy Certification', url: 'https://www.schoox.com/login.php', icon: '🔄' },
+                { name: 'Visitor Host Excellence', url: 'https://www.schoox.com/login.php', icon: '🎩' },
+                { name: 'Quality Assurance Training', url: 'https://bni-bangalore.in', icon: '⭐' }
+            ]
+        },
+        'technology': {
+            title: 'Technology & Digital Tools',
+            roles: ['Online Host', 'BNI Connect Coordinator', 'Training Coordinator'],
+            resources: [
+                { name: 'Zoom Mastery Certification', url: 'https://zoom.us', icon: '💻' },
+                { name: 'BNI Connect Advanced Training', url: 'https://bniconnectglobal.com', icon: '🔗' },
+                { name: 'Tech Tools for Business', url: 'https://www.schoox.com/login.php', icon: '🛠️' }
+            ]
+        }
+    };
 
-    // Main 3 Leaders Data
+    // MAIN LEADERSHIP ROLES
     let masterData = [
         { 
-            id: 'president', title: 'President', tag: 'Executive', icon: '👔', border: 'border-president',
-            desc: 'The CEO of the chapter. Leads the meeting, sets the culture, and liaises with the Director.',
+            id: 'president', title: 'President', tag: 'Executive', icon: '👔', border: 'border-president', wing: 'Strategy & Culture',
+            desc: 'The CEO of the Chapter. Leads meetings, sets culture, liaises with Director.',
             roles: ['Lead Weekly Meeting (90m).', 'Run Monthly LT Meeting.', 'Liaise with Director.', 'Select Leadership Team.', 'Enforce Policies.'],
-            checklist: { pre: ['Review Agenda', 'Welcome Visitors'], dur: ['Run Script', 'Keep Time', 'High Energy'], post: ['Update PALMS', 'Call Absents', 'Weekly Email'] },
+            checklist: { 
+                pre: ['Review Agenda & Slides', 'Welcome Visitors', 'Check AV Equipment'], 
+                dur: ['Run Script', 'Keep Time', 'High Energy', 'Enforce Policies'], 
+                post: ['Update PALMS', 'Call Absents', 'Weekly Email', 'LT Debrief'] 
+            },
             kpis: [{l:'Retention',v:'85%+'}, {l:'Size',v:'50+'}, {l:'Start',v:'100%'}],
-            time: '8-10 Hours/Wk', learning: { g: 'Leadership Mastery', r: 'President Module' }, subs: [] 
+            time: '8-10h/wk',
+            mastery: {
+                why: "Mastering the art of running high-stakes meetings and leading diverse, strong-willed entrepreneurs.",
+                discovery: [
+                    { q: "Do your internal office meetings start on time and end with clear actions?", shift: "The President role builds 'Temporal Discipline.' If you can't run a 90-min BNI meeting, you can't run a scalable company." },
+                    { q: "Is your business culture intentional, or accidental?", shift: "As President, you learn to 'Set the Room.' You translate this to setting the emotional climate of your own workplace." },
+                    { q: "Can you hold strong personalities accountable without losing them?", shift: "Presidential mastery teaches leadership without authority. You influence through respect, not fear." }
+                ],
+                roi: "Industry Authority. You are perceived as the 'Top of Mind' leader in your category, not just a vendor."
+            },
+            learning: { g: 'Leadership Mastery', r: 'President Module' }, 
+            subs: [] 
         },
         { 
-            id: 'vp', title: 'Vice President', tag: 'Chapter Success', icon: '📊', border: 'border-vp',
+            id: 'vp', title: 'Vice President', tag: 'Performance', icon: '📊', border: 'border-vp', wing: 'Quality & Growth',
             desc: 'Chairs the Membership Committee. Ensures Growth, Quality, and Engagement.',
             roles: ['Chair Membership Committee.', 'Track PALMS Report.', 'Manage Attendance.', 'Oversee Applications.', 'Drive Growth.'],
-            checklist: { pre: ['Audit PALMS', 'Run MC Mtg'], dur: ['Report Traffic Lights', 'Open Categories'], post: ['Process Apps', 'Send Letters', 'Update Stats'] },
+            checklist: { 
+                pre: ['Audit PALMS', 'Run MC Mtg', 'Review Applications'], 
+                dur: ['Report Traffic Lights', 'Open Categories', 'Approve Apps'], 
+                post: ['Process Apps', 'Send Letters', 'Update Stats', 'MC Notes'] 
+            },
             kpis: [{l:'Traffic',v:'Green'}, {l:'PALMS',v:'100%'}, {l:'Growth',v:'+20%'}],
-            time: '6-8 Hours/Wk', learning: { g: 'Conflict Resolution', r: 'VP Training + MC' }, subs: []
+            time: '6-8h/wk',
+            mastery: {
+                why: "Mastering the 'Crucial Conversation' and learning to drive growth through data, not emotions.",
+                discovery: [
+                    { q: "Do you struggle to hold employees accountable for poor performance?", shift: "The VP role is a 'Leadership Lab' for accountability. You learn to be firm on the policy and soft on the person." },
+                    { q: "Is your business growth based on 'Gut Feeling' or 'Fact'?", shift: "VP mastery means loving the PALMS report. You learn that 'What gets measured, gets managed.'" },
+                    { q: "Can you say 'no' to bad-fit customers?", shift: "VPs learn quality over quantity. You build a sustainable business, not a revolving door." }
+                ],
+                roi: "Operational Integrity. You build a business that runs on systems and standards, not your presence."
+            },
+            learning: { g: 'Conflict Resolution', r: 'VP Training + MC' }, 
+            subs: []
         },
         { 
-            id: 'st', title: 'Sec / Treas', tag: 'Coordinators', icon: '💼', border: 'border-st',
+            id: 'st', title: 'Sec / Treas', tag: 'Operations', icon: '💼', border: 'border-st', wing: 'Finance & Logistics',
             desc: 'Manages Role Coordinators, finances, and speaker rotation schedule.',
             roles: ['Manage Finances.', 'Speaker Schedule.', 'Oversee Coordinators.', 'Manage Connect Data.', 'Renewals Logistics.'],
-            checklist: { pre: ['Print Rosters', 'Fee Setup'], dur: ['Announce Speakers', 'Door Prize'], post: ['Enter RAP', 'Deposit Bank', 'Update Speaker'] },
+            checklist: { 
+                pre: ['Print Rosters', 'Fee Setup', 'Confirm Speakers'], 
+                dur: ['Announce Speakers', 'Door Prize', 'Collect Fees'], 
+                post: ['Enter RAP', 'Deposit Bank', 'Update Speaker', 'Coord Follow-up'] 
+            },
             kpis: [{l:'Fees',v:'100%'}, {l:'Speakers',v:'8 Wks'}, {l:'Renewals',v:'On-Time'}],
-            time: '4-6 Hours/Wk', learning: { g: 'Financial Accuracy', r: 'S/T Training' }, subs: []
+            time: '4-6h/wk',
+            mastery: {
+                why: "Mastering administrative precision and the logistics of a recurring, high-volume operation.",
+                discovery: [
+                    { q: "Are your own business finances transparent and error-free?", shift: "The ST role builds 'Financial Vigilance.' Precision in venue fees translates to precision in your profit margins." },
+                    { q: "Does your office run smoothly when you aren't there?", shift: "STs manage the 'Meeting Engine.' You learn to build repeatable processes that don't depend on luck." },
+                    { q: "Can you delegate without micromanaging?", shift: "ST mastery teaches coordinator management. You build leaders, not followers." }
+                ],
+                roi: "Administrative Discipline. You turn your business into a repeatable, scalable asset that is easier to sell."
+            },
+            learning: { g: 'Financial Accuracy', r: 'S/T Training' }, 
+            subs: []
         }
     ];
 
-    // --- 2. ENGINE ---
+    // --- ENGINE ---
     function init() {
         renderCalendar();
-        
-        // A. INSTANT LOAD (Priority: Rich Data)
         processData(RICH_DATA);
-
-        // B. CSV FETCH (Optional Overrides)
-        // Note: The processData function will now parse pipe-separated values from the sheet 
-        // to maintain the rich format if you decide to update via sheet later.
+        cycleQuotes();
+        
+        // Optional CSV override
         Papa.parse(SHEET_URL, {
             download: true, header: true,
             complete: (results) => { 
@@ -518,48 +936,41 @@
     }
 
     function processData(csvRows) {
-        masterData.forEach(p => p.subs = []); // Clear existing subs to prevent duplicates
+        masterData.forEach(p => p.subs = []);
 
         csvRows.forEach(row => {
             if(!row.RoleTitle) return;
 
-            // 1. Identify Team
             let idx = 0;
             const g = (row.Group || '').toLowerCase();
             if(g.includes('vp')) idx = 1;
             if(g.includes('st') || g.includes('sec')) idx = 2;
 
-            // 2. Parse Lists (Handles both Array from RICH_DATA and String from CSV)
-            // If it comes from Sheet, split by '|'. If from RICH_DATA, use as is.
             const responsibilities = Array.isArray(row.Roles) ? row.Roles : (row.Responsibilities ? row.Responsibilities.split('|') : (row.Roles || ['Defined by Leadership Team']));
             
-            // Checklists
             let preList = [], durList = [], postList = [];
-            
-            if(row.Checklist) { // From RICH_DATA
+            if(row.Checklist) {
                 preList = row.Checklist.pre;
                 durList = row.Checklist.dur;
                 postList = row.Checklist.post;
-            } else { // From CSV
+            } else {
                 preList = row.Checklist_Pre ? row.Checklist_Pre.split('|') : [];
                 durList = row.Checklist_Dur ? row.Checklist_Dur.split('|') : (row.Tasks ? row.Tasks.split('|') : ['Standard Participation']);
                 postList = row.Checklist_Post ? row.Checklist_Post.split('|') : [];
             }
 
-            // KPIs
             let kpiList = [];
-            if(Array.isArray(row.KPIs)) { // From RICH_DATA
+            if(Array.isArray(row.KPIs)) {
                 kpiList = row.KPIs;
-            } else if (row.KPI_Stats) { // From CSV (Format: Label:Value|Label:Value)
+            } else if (row.KPI_Stats) {
                 kpiList = row.KPI_Stats.split('|').map(k => {
                     const p = k.split(':');
                     return { l: p[0], v: p[1] };
                 });
-            } else { // Fallback
+            } else {
                 kpiList = [{ l: row.KPI_L1 || 'KPI', v: row.KPI_V1 || 'N/A' }];
             }
 
-            // 3. Push to Master Data
             masterData[idx].subs.push({
                 t: row.RoleTitle,
                 d: row.Description,
@@ -568,7 +979,9 @@
                 checklist: { pre: preList, dur: durList, post: postList },
                 kpis: kpiList,
                 l: row.LearnName || (row.LearningName || 'Module'),
-                link: row.Link || (row.LearnLink || 'https://www.schoox.com/login.php')
+                link: row.Link || (row.LearnLink || 'https://www.schoox.com/login.php'),
+                mq: row.MasteryQ || 'How does this role improve your business?',
+                ms: row.MasteryShift || 'This role builds transferable business skills.'
             });
         });
 
@@ -592,33 +1005,43 @@
         document.getElementById('mainGrid').innerHTML = data.map(cat => `
             <div class="role-card ${cat.border}" id="card-${cat.id}">
                 <div class="card-head">
-                    <div class="head-info"><span class="role-badge">${cat.tag}</span><h3>${cat.title}</h3></div>
+                    <div class="head-info">
+                        <span class="role-badge">${cat.tag}</span>
+                        <h3>${cat.title}</h3>
+                        <p style="font-size:0.75rem; color:#888; margin-top:3px;">${cat.wing}</p>
+                    </div>
                     <div class="head-icon">${cat.icon}</div>
                 </div>
                 
                 <div class="tabs">
                     <button class="tab active" onclick="tab(this, 'dash-${cat.id}')">Dashboard</button>
+                    <button class="tab" onclick="tab(this, 'mast-${cat.id}')">Mastery</button>
                     <button class="tab" onclick="tab(this, 'team-${cat.id}')">Team (${cat.subs.length})</button>
                     <button class="tab" onclick="tab(this, 'learn-${cat.id}')">Learning</button>
                 </div>
 
                 <div id="dash-${cat.id}" class="panel active">
-                    <p style="color:#666; margin-bottom:15px; font-style:italic;">${cat.desc}</p>
+                    <div class="dc-insight">
+                        <h4>🎯 DC Strategic Insight</h4>
+                        <p>${dcInsights[cat.id]}</p>
+                    </div>
                     
-                    <h5 style="font-size:0.7rem; color:#999; text-transform:uppercase; margin-bottom:5px;">Responsibilities:</h5>
+                    <p style="color:#666; margin-bottom:15px; font-style:italic; line-height:1.5;">${cat.desc}</p>
+                    
+                    <h5 style="font-size:0.7rem; color:#aaa; text-transform:uppercase; margin:15px 0 8px; font-weight:800;">Core Responsibilities:</h5>
                     <ul class="resp-list">
                         ${cat.roles.map(r => `<li class="resp-item"><span class="resp-icon">➤</span> ${r}</li>`).join('')}
                     </ul>
 
-                    <div class="checklist-group">
+                    <div class="cl-group">
                         <h5>⏮️ Pre-Meeting</h5>
                         ${cat.checklist.pre.map(i => `<div class="cl-item" onclick="check(this)"><div class="cl-check"></div>${i}</div>`).join('')}
                     </div>
-                    <div class="checklist-group">
+                    <div class="cl-group">
                         <h5>▶️ During Meeting</h5>
                         ${cat.checklist.dur.map(i => `<div class="cl-item" onclick="check(this)"><div class="cl-check"></div>${i}</div>`).join('')}
                     </div>
-                    <div class="checklist-group">
+                    <div class="cl-group">
                         <h5>⏭️ Post-Meeting</h5>
                         ${cat.checklist.post.map(i => `<div class="cl-item" onclick="check(this)"><div class="cl-check"></div>${i}</div>`).join('')}
                     </div>
@@ -626,7 +1049,7 @@
                     <div class="stat-grid">
                         <div class="stat-box time">
                             <span class="stat-val">${cat.time}</span>
-                            <span class="stat-lbl">Time</span>
+                            <span class="stat-lbl">Commitment</span>
                         </div>
                         ${cat.kpis.map(k => `
                             <div class="stat-box">
@@ -637,29 +1060,58 @@
                     </div>
                 </div>
 
+                <div id="mast-${cat.id}" class="panel">
+                    <h3 style="color:var(--bni-burgundy); margin-bottom:15px; font-size:1.3rem;">🎯 Leadership Development Framework</h3>
+                    
+                    <div class="mastery-box">
+                        <h5>💡 Leadership ROI</h5>
+                        <p style="font-size:0.95rem; line-height:1.6; color:#333;">${cat.mastery.why}</p>
+                    </div>
+                    
+                    <h5 style="font-size:0.7rem; color:#aaa; text-transform:uppercase; margin:20px 0 10px; font-weight:800; letter-spacing:1px;">Self-Discovery Questions:</h5>
+                    ${cat.mastery.discovery.map(d => `
+                        <div class="discovery-q">
+                            <strong>Reflection:</strong>
+                            <p>${d.q}</p>
+                            <div class="shift">🔄 Mentor Shift: ${d.shift}</div>
+                        </div>
+                    `).join('')}
+
+                    <div class="roi-box">
+                        🏆 PROVEN ABILITY: ${cat.mastery.roi}
+                    </div>
+                </div>
+
                 <div id="team-${cat.id}" class="panel">
+                    <h3 style="margin-bottom:15px;">Wing Coordinators</h3>
                     ${cat.subs.map(s => `
                         <div class="acc-item">
                             <div class="acc-head" onclick="accordion(this)">${s.t} <span>▼</span></div>
                             <div class="acc-body">
-                                <p style="margin-bottom:15px; font-style:italic; border-bottom:1px solid #eee; padding-bottom:10px;">${s.d}</p>
+                                <p style="margin-bottom:15px; font-style:italic; color:#666; border-bottom:1px solid #eee; padding-bottom:12px;">${s.d}</p>
                                 
-                                <h6 style="text-transform:uppercase; color:#999; font-size:0.65rem; margin-bottom:5px;">Responsibilities:</h6>
+                                <h6 style="text-transform:uppercase; color:#999; font-size:0.65rem; margin:15px 0 8px; font-weight:800;">Responsibilities:</h6>
                                 <ul class="resp-list" style="margin-bottom:15px;">
                                     ${s.roles.map(r => `<li class="resp-item" style="font-size:0.8rem;">• ${r}</li>`).join('')}
                                 </ul>
 
-                                <div class="checklist-group">
-                                    <h5>⏮️ Pre</h5>
-                                    ${s.checklist.pre.length ? s.checklist.pre.map(i => `<div class="cl-item" onclick="check(this)"><div class="cl-check"></div>${i}</div>`).join('') : '<span style="font-size:0.8rem; color:#aaa;">None</span>'}
+                                <div class="discovery-q" style="background:#f9f9f9; border-color:var(--bni-gold); margin:15px 0;">
+                                    <strong>🔍 Mastery Discovery:</strong>
+                                    <p>${s.mq}</p>
+                                    <div class="shift">💡 ${s.ms}</div>
                                 </div>
-                                <div class="checklist-group">
+
+                                <div class="cl-group">
+                                    <h5>⏮️ Pre</h5>
+                                    ${s.checklist.pre.length ? s.checklist.pre.map(i => `<div class="cl-item" onclick="check(this)"><div class="cl-check"></div>${i}</div>`).join('') : '<span style="font-size:0.8rem; color:#aaa;">Standard prep</span>'}
+                                </div>
+                                <div class="cl-group">
                                     <h5>▶️ During</h5>
                                     ${s.checklist.dur.map(i => `<div class="cl-item" onclick="check(this)"><div class="cl-check"></div>${i}</div>`).join('')}
                                 </div>
-                                <div class="checklist-group">
+                                <div class="cl-group">
                                     <h5>⏭️ Post</h5>
-                                    ${s.checklist.post.length ? s.checklist.post.map(i => `<div class="cl-item" onclick="check(this)"><div class="cl-check"></div>${i}</div>`).join('') : '<span style="font-size:0.8rem; color:#aaa;">None</span>'}
+                                    ${s.checklist.post.length ? s.checklist.post.map(i => `<div class="cl-item" onclick="check(this)"><div class="cl-check"></div>${i}</div>`).join('') : '<span style="font-size:0.8rem; color:#aaa;">Standard follow-up</span>'}
                                 </div>
 
                                 <div class="stat-grid">
@@ -682,17 +1134,18 @@
                 </div>
 
                 <div id="learn-${cat.id}" class="panel">
-                    <h4 style="margin-bottom:10px; color:#333">Goal: ${cat.learning.g}</h4>
-                    <div style="background:#fff3cd; color:#856404; padding:15px; border-radius:8px; font-size:0.9rem; border:1px solid #ffeeba;">
-                        ⚠️ <strong>Required:</strong> ${cat.learning.r}
+                    <h4 style="margin-bottom:10px; color:#333; font-size:1.1rem;">🎯 Mastery Goal: ${cat.learning.g}</h4>
+                    <div style="background:#fff3cd; color:#856404; padding:15px; border-radius:8px; font-size:0.9rem; border:1px solid #ffeeba; line-height:1.5;">
+                        ⚠️ <strong>Required Training:</strong> ${cat.learning.r}
                     </div>
-                    <a href="https://www.schoox.com/login.php" target="_blank" class="learn-btn">Go to Business Builder &rarr;</a>
+                    <a href="https://www.schoox.com/login.php" target="_blank" class="learn-btn" style="margin-top:15px;">Go to Business Builder &rarr;</a>
+                    <a href="https://www.bnipodcast.com/" target="_blank" class="learn-btn" style="background:#e3f2fd; color:#0d47a1; border-color:#90caf9;">🎙️ BNI Podcast Library</a>
                 </div>
             </div>
         `).join('');
     }
 
-    // --- 3. UTILS & AI ---
+    // --- UTILITIES ---
     function tab(btn, id) {
         const card = btn.closest('.role-card');
         card.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
@@ -700,57 +1153,183 @@
         btn.classList.add('active');
         card.querySelector(`#${id}`).classList.add('active');
     }
+
     function accordion(h) {
         const b = h.nextElementSibling;
         b.classList.toggle('open');
         h.querySelector('span').innerText = b.classList.contains('open') ? '▲' : '▼';
     }
+
     function check(i) { i.classList.toggle('done'); }
+
     function scrollToCard(id, tabIdx) {
         const el = document.getElementById(`card-${id}`);
         if(el) {
             el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            if(tabIdx === 1) el.querySelectorAll('.tab')[1].click();
+            setTimeout(() => {
+                if(tabIdx === 1) el.querySelectorAll('.tab')[2].click(); // Team tab
+            }, 300);
         }
     }
+
     function filterGrid() {
-        const term = document.getElementById('searchInput').value.toLowerCase();
+        const term = sanitizeInput(document.getElementById('searchInput').value.toLowerCase());
         let filtered = JSON.parse(JSON.stringify(masterData));
-        filtered.forEach(cat => {
-            cat.subs = cat.subs.filter(s => s.t.toLowerCase().includes(term));
-        });
+        
+        if(term) {
+            filtered.forEach(cat => {
+                cat.subs = cat.subs.filter(s => 
+                    s.t.toLowerCase().includes(term) || 
+                    s.d.toLowerCase().includes(term) ||
+                    s.roles.some(r => r.toLowerCase().includes(term))
+                );
+            });
+        }
+        
         renderGrid(filtered);
     }
-    
-    // AI Matcher Logic
-    const aiKeys = { 'social': 'vp', 'party': 'st', 'money': 'st', 'rules': 'vp', 'teach': 'president', 'host': 'st', 'tech': 'st' };
-    function openModal() { document.getElementById('aiModal').style.display = 'flex'; document.getElementById('aiInput').focus(); }
-    function closeModal(e) { if(e.target.id === 'aiModal' || e.target.classList.contains('modal-close')) document.getElementById('aiModal').style.display = 'none'; }
-    function runAI() {
-        const txt = document.getElementById('aiInput').value.toLowerCase();
-        const res = document.getElementById('aiOutput');
-        let m = null;
-        for(const [k,v] of Object.entries(aiKeys)) if(txt.includes(k)) m = v;
-        if(m) {
-            const r = masterData.find(x => x.id === m);
-            res.innerHTML = `<div style="background:#d4edda; color:#155724; padding:10px; border-radius:8px; margin-top:10px;">🎯 Try <strong>${r.title}</strong> team!</div>`;
-        } else res.innerHTML = '';
+
+    // ROLE MATCHER
+    const matcherKeys = { 
+        'social': 'vp', 'party': 'st', 'culture': 'vp', 'people': 'vp',
+        'money': 'st', 'finance': 'st', 'fees': 'st', 'accounting': 'st',
+        'rules': 'vp', 'policy': 'vp', 'attendance': 'vp', 'quality': 'vp',
+        'teach': 'president', 'train': 'president', 'speak': 'president', 'education': 'president',
+        'host': 'st', 'visitor': 'st', 'greeting': 'st',
+        'tech': 'st', 'zoom': 'st', 'online': 'st',
+        'growth': 'president', 'referral': 'president', 'networking': 'president'
+    };
+
+    function openModal(type) { 
+        const modal = type === 'matcher' ? 'matcherModal' : 'deficiencyModal';
+        document.getElementById(modal).style.display = 'flex'; 
+        const input = type === 'matcher' ? 'matcherInput' : 'deficiencyInput';
+        document.getElementById(input).focus(); 
+        document.getElementById(input).value = '';
+        const output = type === 'matcher' ? 'matcherOutput' : 'deficiencyOutput';
+        document.getElementById(output).innerHTML = '';
     }
 
-    // Quote Cycler
-    const quotes = ["Givers Gain®", "Culture eats strategy", "Changing the Way the World Does Business"];
-    let qIdx = 0;
-    setInterval(() => {
-        const el = document.getElementById('quoteTarget');
-        el.style.opacity = 0;
-        setTimeout(() => {
-            qIdx = (qIdx + 1) % quotes.length;
-            el.innerText = `"${quotes[qIdx]}" — Dr. Ivan Misner`;
-            el.style.opacity = 1;
-        }, 500);
-    }, 5000);
+    function closeModal(e, type) { 
+        const modal = type === 'matcher' ? 'matcherModal' : 'deficiencyModal';
+        if(e.target.id === modal || e.target.classList.contains('modal-close')) {
+            document.getElementById(modal).style.display = 'none'; 
+        }
+    }
 
-    // Start Engine
+    function runMatcher() {
+        const txt = sanitizeInput(document.getElementById('matcherInput').value.toLowerCase());
+        const res = document.getElementById('matcherOutput');
+        
+        if(txt.length < 3) {
+            res.innerHTML = '';
+            return;
+        }
+
+        let m = null;
+        for(const [k,v] of Object.entries(matcherKeys)) {
+            if(txt.includes(k)) {
+                m = v;
+                break;
+            }
+        }
+
+        if(m) {
+            const r = masterData.find(x => x.id === m);
+            res.innerHTML = `
+                <div style="background:#d4edda; color:#155724; padding:15px; border-radius:8px; margin-top:10px; text-align:left;">
+                    <div style="font-weight:800; font-size:0.9rem; margin-bottom:8px;">🎯 Perfect Match Found!</div>
+                    <div style="font-size:0.85rem; line-height:1.5;">
+                        <strong>${r.title}</strong> (${r.wing})<br>
+                        <span style="opacity:0.9;">${r.desc}</span>
+                    </div>
+                    <button onclick="scrollToCard('${r.id}'); closeModal({target:{id:'matcherModal'}}, 'matcher')" 
+                            style="background:var(--bni-red); color:white; border:none; padding:8px 16px; border-radius:6px; margin-top:10px; cursor:pointer; font-weight:700; font-size:0.8rem;">
+                        View Role Details →
+                    </button>
+                </div>
+            `;
+        } else {
+            res.innerHTML = `
+                <div style="background:#fff3cd; color:#856404; padding:12px; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+                    💡 Try keywords like: social, money, rules, teaching, host, tech, growth
+                </div>
+            `;
+        }
+    }
+
+    // DEFICIENCY MATCHER
+    function runDeficiencyMatcher() {
+        const txt = sanitizeInput(document.getElementById('deficiencyInput').value.toLowerCase());
+        const res = document.getElementById('deficiencyOutput');
+        
+        if(txt.length < 5) {
+            res.innerHTML = '';
+            return;
+        }
+
+        let match = null;
+        for(const [key, value] of Object.entries(deficiencyMap)) {
+            if(txt.includes(key)) {
+                match = value;
+                break;
+            }
+        }
+
+        if(match) {
+            res.innerHTML = `
+                <div class="learning-match">
+                    <h4>✅ Perfect Learning Path Identified!</h4>
+                    <p style="font-size:0.9rem; margin-bottom:15px; color:#333;">${match.title}</p>
+                    
+                    <div style="background:white; padding:12px; border-radius:8px; margin-bottom:15px; border:1px solid #e0e0e0;">
+                        <div style="font-size:0.75rem; color:#666; text-transform:uppercase; margin-bottom:8px; font-weight:700;">Recommended BNI Roles:</div>
+                        ${match.roles.map(role => `<div style="font-size:0.85rem; padding:4px 0; color:#333;">• ${role}</div>`).join('')}
+                    </div>
+
+                    <div style="font-size:0.75rem; color:#666; text-transform:uppercase; margin-bottom:10px; font-weight:700;">Learning Resources:</div>
+                    <div class="learning-resources">
+                        ${match.resources.map(res => `
+                            <a href="${res.url}" target="_blank" class="resource-link">
+                                <span style="font-size:1.2rem;">${res.icon}</span>
+                                <span>${res.name}</span>
+                            </a>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        } else {
+            res.innerHTML = `
+                <div style="background:#fff3cd; color:#856404; padding:15px; border-radius:8px; margin-top:10px; font-size:0.85rem; text-align:left; line-height:1.5;">
+                    💡 <strong>Try specific skills like:</strong><br>
+                    • Public Speaking<br>
+                    • Financial Management<br>
+                    • Conflict Resolution<br>
+                    • Team Building<br>
+                    • Customer Service<br>
+                    • Marketing/Sales<br>
+                    • Leadership<br>
+                    • Technology
+                </div>
+            `;
+        }
+    }
+
+    // QUOTE CYCLER
+    let qIdx = 0;
+    function cycleQuotes() {
+        setInterval(() => {
+            const el = document.getElementById('quoteTarget');
+            el.style.opacity = 0;
+            setTimeout(() => {
+                qIdx = (qIdx + 1) % bniQuotes.length;
+                el.innerText = `"${bniQuotes[qIdx].text}" — ${bniQuotes[qIdx].author}`;
+                el.style.opacity = 1;
+            }, 500);
+        }, 7000);
+    }
+
+    // INITIALIZE
     init();
 </script>
 </body>
