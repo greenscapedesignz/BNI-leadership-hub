@@ -21,7 +21,7 @@
             --anim: 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
         * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; font-family:'Segoe UI', system-ui, -apple-system, sans-serif; }
-        body { background-color:var(--bni-gray); color:var(--text-main); padding-bottom:100px; overflow-x:hidden; }
+        body { background-color:var(--bni-gray); color:var(--text-main); padding-bottom:100px; max-width:100%; }
 
         /* NAVIGATION - RESPONSIVE */
         .nav-sticky { background:var(--bni-black); position:sticky; top:0; z-index:1000; padding:0.6rem 0; box-shadow:0 4px 12px rgba(0,0,0,0.2); }
@@ -85,14 +85,16 @@
         }
 
         /* ORG TRACK - IMPROVED RESPONSIVENESS */
-        .org-track { 
+        .org-track {
+            cursor:grab; 
             display:flex; gap:12px; overflow-x:auto; padding-bottom:10px; 
             scroll-behavior:smooth; scrollbar-width:none; -webkit-overflow-scrolling:touch;
-            scroll-snap-type:x proximity;
+            scroll-snap-type:x mandatory;
         }
+        .org-track:active{cursor:grabbing}
         .org-track::-webkit-scrollbar { display:none; }
         .org-card { 
-            min-width:clamp(130px, 30vw, 150px); background:#f9f9f9; border:1px solid #eee; 
+            min-width:160px; background:#f9f9f9; border:1px solid #eee; 
             padding:15px; border-radius:12px; border-left:5px solid #ccc; cursor:pointer; 
             transition:var(--anim); flex-shrink:0; scroll-snap-align:start;
         }
@@ -481,9 +483,11 @@
     // SECURITY: Input sanitization
     function sanitizeInput(str) {
         if (!str) return '';
-        const div = document.createElement('div');
-        div.textContent = str;
-        return div.innerHTML;
+        return String(str)
+          .replace(/</g,'&lt;')
+          .replace(/>/g,'&gt;')
+          .replace(/"/g,'&quot;')
+          .replace(/'/g,'&#039;');
     }
 
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR5TU1qmAYJtODRDEnC6Xuv7zcIWsQspuz99hEKMfywqoDeu0GL-aFZEiov8CtpF1hKW1X-3Oi6LTre/pub?gid=100496383&single=true&output=csv';
@@ -986,6 +990,7 @@
         });
 
         renderGrid(masterData);
+        setTimeout(restoreChecksState, 0);
     }
 
     function renderCalendar() {
